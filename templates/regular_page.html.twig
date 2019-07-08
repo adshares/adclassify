@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ encore_entry_link_tags('css/app') }}
+    {{ encore_entry_link_tags('css/regular') }}
+{% endblock %}
+
+{% block body_id %}regular-page{% endblock %}
+{% block body %}
+    body
+{% endblock %}

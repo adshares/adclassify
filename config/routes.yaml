@@ -1,0 +1,10 @@
+
+# login page
+security.login:
+    path: /login
+    controller: Adshares\Adclassify\Controller\SecurityController::login
+
+# main pages
+index:
+    path: /
+    controller: Adshares\Adclassify\Controller\AppController::index

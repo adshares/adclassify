@@ -1,0 +1,40 @@
+security:
+    encoders:
+        # Our user class and the algorithm we'll use to encode passwords
+        # https://symfony.com/doc/current/security.html#c-encoding-the-user-s-password
+        Adshares\Adclassify\Entity\User:
+            # bcrypt or argon2i are recommended
+            # argon2i is more secure, but requires PHP 7.2 or the Sodium extension
+            algorithm: bcrypt
+            cost: 12
+    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    providers:
+        database_users:
+            entity: { class: Adshares\Adclassify\Entity\User, property: username }
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        api:
+            pattern: ^/api
+            security: false
+        info:
+            pattern: ^/info
+            security: false
+        security:
+            pattern: ^/login
+            security: false
+        main:
+            pattern: ^/
+            anonymous: false
+            guard:
+                authenticators:
+                    - Adshares\Adclassify\Security\LoginFormAuthenticator
+
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+        - { path: '^/admin', roles: ROLE_ADMIN }
+
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER

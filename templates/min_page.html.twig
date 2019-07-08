@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ encore_entry_link_tags('css/app') }}
+    {{ encore_entry_link_tags('css/min') }}
+{% endblock %}
+
+{% block body_id %}min-page{% endblock %}
+{% block body %}
+    <section class="text-center">
+        <header>
+            <img src="{{ asset('build/images/adshares-logo-min.svg') }}" height="72" class="mb-4" alt="Adshares">
+            <h1 class="h3 mb-3 font-weight-normal">Adclassify</h1>
+        </header>
+        {% block content %}{% endblock %}
+        <footer>
+            <div class="mt-2 mb-2 py-1 border-top text-muted small">
+                Adshares | Adclassify | v0.0.1
+            </div>
+        </footer>
+    </section>
+{% endblock %}

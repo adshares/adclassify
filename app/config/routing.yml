@@ -1,3 +1,0 @@
-app:
-    resource: '@Adclassify/Controller/'
-    type: annotation

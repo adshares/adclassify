@@ -1,72 +1,108 @@
 {
-	"name" : "symfony/framework-standard-edition",
-	"license" : "MIT",
-	"type" : "project",
-	"description" : "The \"Symfony Standard Edition\" distribution",
-	"autoload" : {
-		"psr-4" : {
-			"Adclassify\\" : "src/Adclassify"
+	"name": "adshares/adclassify",
+	"description": "Implementation of Adclassify service in Adshares Network",
+	"type": "project",
+	"license": "proprietary",
+	"authors": [
+		{
+			"name": "Adshares",
+			"homepage": "https://adshares.pl"
 		},
-		"classmap" : [
-			"app/AppKernel.php",
-			"app/AppCache.php"
-		]
+		{
+			"name": "Contributors",
+			"homepage": "https://github.com/adshares/adclassify/graphs/contributors"
+		}
+	],
+	"require": {
+		"php": "^7.2",
+		"ext-ctype": "*",
+		"ext-curl": "*",
+		"ext-iconv": "*",
+		"ext-json": "*",
+		"guzzlehttp/guzzle": "^6.3",
+		"psr/log": "^1.0",
+		"symfony/asset": "4.2.*",
+		"symfony/console": "4.2.*",
+		"symfony/dotenv": "4.2.*",
+		"symfony/expression-language": "4.2.*",
+		"symfony/flex": "^1.1",
+		"symfony/form": "4.2.*",
+		"symfony/framework-bundle": "4.2.*",
+		"symfony/monolog-bundle": "^3.1",
+		"symfony/orm-pack": "^1.0",
+		"symfony/process": "4.2.*",
+		"symfony/security-bundle": "4.2.*",
+		"symfony/serializer-pack": "^1.0",
+		"symfony/swiftmailer-bundle": "^3.1",
+		"symfony/twig-bundle": "4.2.*",
+		"symfony/validator": "4.2.*",
+		"symfony/web-link": "4.2.*",
+		"symfony/webpack-encore-bundle": "^1.2",
+		"symfony/yaml": "4.2.*"
 	},
-	"autoload-dev" : {
-		"psr-4" : {
-			"Tests\\" : "tests/"
+	"require-dev": {
+		"dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
+		"jakub-onderka/php-parallel-lint": "^1.0",
+		"phpcompatibility/php-compatibility": "^9.1",
+		"sensiolabs/security-checker": "^5.0",
+		"squizlabs/php_codesniffer": "^3.4",
+		"symfony/debug-pack": "^1.0",
+		"symfony/maker-bundle": "^1.0",
+		"symfony/profiler-pack": "^1.0",
+		"symfony/test-pack": "^1.0",
+		"symfony/var-dumper": "4.2.*",
+		"symfony/web-server-bundle": "4.2.*"
+	},
+	"config": {
+		"preferred-install": {
+			"*": "dist"
 		},
-		"files" : [
-			"vendor/symfony/symfony/src/Symfony/Component/VarDumper/Resources/functions/dump.php"
-		]
+		"sort-packages": true
 	},
-	"require" : {
-		"php" : ">=5.5.9",
-		"doctrine/doctrine-bundle" : "^1.6",
-		"doctrine/orm" : "^2.5",
-		"incenteev/composer-parameter-handler" : "^2.0",
-		"sensio/distribution-bundle" : "^5.0.19",
-		"sensio/framework-extra-bundle" : "^3.0.2",
-		"symfony/monolog-bundle" : "^3.1.0",
-		"symfony/polyfill-apcu" : "^1.0",
-		"symfony/swiftmailer-bundle" : "^2.3.10",
-		"symfony/symfony" : "3.4.4",
-		"twig/twig" : "^1.0||^2.0"
+	"autoload": {
+		"psr-4": {
+			"Adshares\\Adclassify\\": "src/"
+		}
 	},
-	"require-dev" : {
-		"sensio/generator-bundle" : "^3.0",
-		"symfony/phpunit-bridge" : "^3.0"
+	"autoload-dev": {
+		"psr-4": {
+			"Adshares\\Adclassify\\Tests\\": "tests/"
+		}
 	},
-	"scripts" : {
-		"symfony-scripts" : [
-			"Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-			"Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-			"Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-			"Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-			"Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-			"Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+	"replace": {
+		"paragonie/random_compat": "2.*",
+		"symfony/polyfill-ctype": "*",
+		"symfony/polyfill-iconv": "*",
+		"symfony/polyfill-php71": "*",
+		"symfony/polyfill-php70": "*",
+		"symfony/polyfill-php56": "*"
+	},
+	"scripts": {
+		"auto-scripts": {
+			"cache:clear": "symfony-cmd",
+			"assets:install %PUBLIC_DIR%": "symfony-cmd",
+			"security-checker security:check": "script"
+		},
+		"post-install-cmd": [
+			"@auto-scripts"
 		],
-		"post-install-cmd" : "@symfony-scripts",
-		"post-update-cmd" : "@symfony-scripts"
+		"post-update-cmd": [
+			"@auto-scripts"
+		],
+		"qa-check": [
+			"security-checker security:check",
+			"parallel-lint --no-colors --blame --exclude vendor .",
+			"phpcs -s src --standard=PHPCompatibility",
+			"phpcs -s src --standard=PSR2"
+		]
 	},
-	"config" : {
-		"platform" : {
-			"php" : "5.5.9"
-		},
-		"sort-packages" : true
+	"conflict": {
+		"symfony/symfony": "*"
 	},
-	"extra" : {
-		"symfony-app-dir" : "app",
-		"symfony-bin-dir" : "bin",
-		"symfony-var-dir" : "var",
-		"symfony-web-dir" : "web",
-		"symfony-tests-dir" : "tests",
-		"symfony-assets-install" : "relative",
-		"incenteev-parameters" : {
-			"file" : "app/config/parameters.yml"
-		},
-		"branch-alias" : {
-			"dev-master" : "3.3-dev"
+	"extra": {
+		"symfony": {
+			"allow-contrib": false,
+			"require": "4.2.*"
 		}
 	}
 }
