@@ -1,10 +1,19 @@
 
 # login page
-security.login:
+security_login:
     path: /login
     controller: Adshares\Adclassify\Controller\SecurityController::login
+
+security_logout:
+    path: /logout
 
 # main pages
 index:
     path: /
     controller: Adshares\Adclassify\Controller\AppController::index
+
+
+# admin page
+admin:
+    path: /admin
+    controller: Adshares\Adclassify\Controller\AdminController::index

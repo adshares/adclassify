@@ -10,21 +10,23 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class LoginFormType extends AbstractType
 {
-    private $requestStack;
+    private $authenticationUtils;
 
-    public function __construct(RequestStack $requestStack)
+    public function __construct(AuthenticationUtils $authenticationUtils)
     {
-        $this->requestStack = $requestStack;
+        $this->authenticationUtils = $authenticationUtils;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('username', EmailType::class, [
+            ->add('email', EmailType::class, [
                 'attr' => [
                     'placeholder' => 'Email address'
                 ],
@@ -35,31 +37,25 @@ class LoginFormType extends AbstractType
                 ],
             ]);
 
-        $request = $this->requestStack->getCurrentRequest();
-
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($request) {
-            dump($request);exit;
-            if ($request->attributes->has(Security::AUTHENTICATION_ERROR)) {
-                $error = $request->attributes->get(Security::AUTHENTICATION_ERROR);
-            } else {
-                $error = $request->getSession()->get(Security::AUTHENTICATION_ERROR);
-            }
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+            // get the login error if there is one
+            $error = $this->authenticationUtils->getLastAuthenticationError();
             if ($error) {
-                $event->getForm()->addError(new FormError($error->getMessage()));
+                $event->getForm()->addError(new FormError($error->getMessageKey()));
             }
             $event->setData(array_replace((array)$event->getData(), array(
-                'username' => $request->getSession()->get(Security::LAST_USERNAME),
+                'username' => $this->authenticationUtils->getLastUsername(),
             )));
         });
     }
 
-//    public function configureOptions(OptionsResolver $resolver)
-//    {
-//        /* Note: the form's csrf_token_id must correspond to that for the form login
-//         * listener in order for the CSRF token to validate successfully.
-//         */
-//        $resolver->setDefaults([
-//            'csrf_token_id' => 'authenticate',
-//        ]);
-//    }
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        /* Note: the form's csrf_token_id must correspond to that for the form login
+         * listener in order for the CSRF token to validate successfully.
+         */
+        $resolver->setDefaults([
+            'csrf_token_id' => 'authenticate',
+        ]);
+    }
 }
