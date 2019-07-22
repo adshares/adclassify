@@ -19,6 +19,7 @@
 		"ext-curl": "*",
 		"ext-iconv": "*",
 		"ext-json": "*",
+		"gedmo/doctrine-extensions": "^2.4",
 		"psr/log": "^1.0",
 		"symfony/asset": "4.3.*",
 		"symfony/console": "4.3.*",

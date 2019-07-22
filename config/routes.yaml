@@ -1,3 +1,17 @@
+# API
+api_taxonomy:
+    path: /api/v{version}/taxonomy
+    controller: Adshares\Adclassify\Controller\ApiController::taxonomy
+    methods: GET
+    requirements:
+        version:  '0|1'
+
+api_requests:
+    path: /api/v{version}/taxonomy
+    controller: Adshares\Adclassify\Controller\ApiController::request
+    methods: PSOT
+    requirements:
+        version:  '0|1'
 
 # login page
 security_login:
@@ -12,6 +26,15 @@ index:
     path: /
     controller: Adshares\Adclassify\Controller\AppController::index
 
+# info
+info:
+    path: /info.{_format}
+    controller: Adshares\Adclassify\Controller\AppController::info
+    methods: GET
+    defaults:
+        _format: 'json'
+    requirements:
+        _format:  'json|txt'
 
 # admin page
 admin:
