@@ -2,18 +2,29 @@
 
 namespace Adshares\Adclassify\Entity;
 
+use Adshares\Adclassify\Entity\Traits\SoftDeleteableEntity;
+use Adshares\Adclassify\Entity\Traits\TimestampableEntity;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="Adshares\Adclassify\Repository\UserRepository")
- * @ORM\Table(name="user")
+ * @ORM\Table(
+ *     name="user",
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="email_idx", columns={"email"})}
+ * )
  * @UniqueEntity(fields={"email"}, message="There is already an account with this e-mail")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
 class User implements UserInterface, \Serializable
 {
+    use TimestampableEntity, SoftDeleteableEntity;
+
     /**
      * @var int
      *
@@ -26,7 +37,7 @@ class User implements UserInterface, \Serializable
     /**
      * @var string
      *
-     * @ORM\Column(type="string", unique=true)
+     * @ORM\Column(type="string")
      * @Assert\Email()
      */
     private $email;
@@ -53,10 +64,14 @@ class User implements UserInterface, \Serializable
      */
     private $fullName;
 
+    /**
+     * @ORM\OneToMany(targetEntity="ApiKey", mappedBy="user", cascade={"persist", "remove"})
+     */
+    private $apiKeys;
 
-    public function getEmail(): ?string
+    public function __construct()
     {
-        return $this->email;
+        $this->apiKeys = new ArrayCollection();
     }
 
     public function setEmail(string $email): void
@@ -64,9 +79,19 @@ class User implements UserInterface, \Serializable
         $this->email = $email;
     }
 
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
     public function getUsername(): ?string
     {
         return $this->email;
+    }
+
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
     }
 
     public function getPassword(): ?string
@@ -74,9 +99,9 @@ class User implements UserInterface, \Serializable
         return $this->password;
     }
 
-    public function setPassword(string $password): void
+    public function setRoles(array $roles): void
     {
-        $this->password = $password;
+        $this->roles = $roles;
     }
 
     /**
@@ -94,9 +119,12 @@ class User implements UserInterface, \Serializable
         return array_unique($roles);
     }
 
-    public function setRoles(array $roles): void
+    /**
+     * @return Collection|ApiKey[]
+     */
+    public function getApiKeys(): Collection
     {
-        $this->roles = $roles;
+        return $this->apiKeys;
     }
 
     /**
@@ -124,22 +152,26 @@ class User implements UserInterface, \Serializable
         // $this->plainPassword = null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function serialize(): string
     {
-        // add $this->salt too if you don't use Bcrypt or Argon2i
-        return serialize([$this->id, $this->email, $this->password]);
+        return serialize([
+            $this->id,
+            $this->email,
+            $this->password,
+            $this->roles,
+            $this->fullName
+        ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function unserialize($serialized): void
     {
-        // add $this->salt too if you don't use Bcrypt or Argon2i
-        [$this->id, $this->email, $this->password] = unserialize($serialized, ['allowed_classes' => false]);
+        [
+            $this->id,
+            $this->email,
+            $this->password,
+            $this->roles,
+            $this->fullName
+        ] = unserialize($serialized, ['allowed_classes' => false]);
     }
 
     public function __toString(): string

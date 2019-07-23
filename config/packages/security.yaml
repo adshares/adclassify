@@ -3,39 +3,51 @@ security:
         # Our user class and the algorithm we'll use to encode passwords
         # https://symfony.com/doc/current/security.html#c-encoding-the-user-s-password
         Adshares\Adclassify\Entity\User:
-            # bcrypt or argon2i are recommended
-            # argon2i is more secure, but requires PHP 7.2 or the Sodium extension
-            algorithm: bcrypt
-            cost: 12
+            algorithm: auto
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        database_users:
-            entity: { class: Adshares\Adclassify\Entity\User, property: username }
+        # used to reload user from session & other features (e.g. switch_user)
+        app_user_provider:
+            entity:
+                class: Adshares\Adclassify\Entity\User
+                property: email
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         api:
-            pattern: ^/api
-            security: false
+            pattern: ^/api/
+            stateless: true
+            wsse: true
         info:
             pattern: ^/info
             security: false
-#        security:
-#            pattern: ^/login
-#            security: false
         main:
-            pattern: ^/
-            anonymous: false
+            anonymous: true
             guard:
                 authenticators:
                     - Adshares\Adclassify\Security\LoginFormAuthenticator
+            logout:
+                path: security_logout
+                # where to redirect after logout
+                target: index
+
+            # activate different ways to authenticate
+            # https://symfony.com/doc/current/security.html#firewalls-authentication
+
+            # https://symfony.com/doc/current/security/impersonating_user.html
+            # switch_user: true
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/api/, roles: ROLE_CLIENT }
+        - { path: ^/, roles: ROLE_USER }
 
     role_hierarchy:
-        ROLE_ADMIN: ROLE_USER
+        ROLE_CLIENT: ROLE_USER
+        ROLE_CLASSIFIER: ROLE_USER
+        ROLE_ADMIN: [ROLE_CLIENT, ROLE_CLASSIFIER]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
