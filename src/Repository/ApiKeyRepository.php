@@ -12,4 +12,9 @@ class ApiKeyRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, ApiKey::class);
     }
+
+    public function findByName(string $name): ?ApiKey
+    {
+        return $this->findOneBy(['name' => $name]);
+    }
 }

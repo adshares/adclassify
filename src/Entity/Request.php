@@ -22,6 +22,7 @@ class Request
 
     const STATUS_NEW = 1;
     const STATUS_REJECTED = 2;
+    const STATUS_CANCELED = 3;
     const STATUS_PROCESSED = 0;
 
     /**
@@ -43,7 +44,7 @@ class Request
     private $user;
 
     /**
-     * @var User
+     * @var Classification
      *
      * @ORM\ManyToOne(targetEntity="Classification")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
@@ -66,6 +67,14 @@ class Request
      * @Assert\NotBlank()
      */
     private $serveUrl;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=16)
+     * @Assert\NotBlank()
+     */
+    private $type;
 
     /**
      * @var string
@@ -105,6 +114,13 @@ class Request
      */
     private $info;
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $sentAt;
+
     public function getId(): int
     {
         return $this->id;
@@ -120,12 +136,12 @@ class Request
         $this->user = $user;
     }
 
-    public function getClassification(): User
+    public function getClassification(): Classification
     {
         return $this->classification;
     }
 
-    public function setClassification(User $classification): void
+    public function setClassification(Classification $classification): void
     {
         $this->classification = $classification;
     }
@@ -148,6 +164,16 @@ class Request
     public function setServeUrl(string $serveUrl): void
     {
         $this->serveUrl = $serveUrl;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): void
+    {
+        $this->type = $type;
     }
 
     public function getLandingUrl(): string
@@ -198,6 +224,16 @@ class Request
     public function setInfo(string $info): void
     {
         $this->info = $info;
+    }
+
+    public function setSentAt(\DateTime $sentAt): void
+    {
+        $this->sentAt = $sentAt;
+    }
+
+    public function getSentAt(): \DateTime
+    {
+        return $this->sentAt;
     }
 
     public function __toString(): string

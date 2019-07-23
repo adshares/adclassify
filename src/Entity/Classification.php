@@ -5,6 +5,7 @@ namespace Adshares\Adclassify\Entity;
 use Adshares\Adclassify\Entity\Traits\BlameableEntity;
 use Adshares\Adclassify\Entity\Traits\TimestampableEntity;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -19,6 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     }
  * )
  * @UniqueEntity(fields={"checksum"}, message="There is already a classification with this checksum")
+ * @Gedmo\Loggable
  */
 class Classification
 {

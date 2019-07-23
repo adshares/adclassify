@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Adshares\Adclassify\Repository;
-
 
 class TaxonomyRepository
 {

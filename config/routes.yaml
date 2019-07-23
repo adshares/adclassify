@@ -1,15 +1,15 @@
 # API
 api_taxonomy:
     path: /api/v{version}/taxonomy
-    controller: Adshares\Adclassify\Controller\ApiController::taxonomy
+    controller: Adshares\Adclassify\Controller\ApiController::getTaxonomy
     methods: GET
     requirements:
         version:  '0|1'
 
 api_requests:
-    path: /api/v{version}/taxonomy
-    controller: Adshares\Adclassify\Controller\ApiController::request
-    methods: PSOT
+    path: /api/v{version}/requests
+    controller: Adshares\Adclassify\Controller\ApiController::postRequests
+    methods: POST
     requirements:
         version:  '0|1'
 

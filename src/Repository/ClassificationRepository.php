@@ -12,4 +12,9 @@ class ClassificationRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Classification::class);
     }
+
+    public function findByChecksum(string $checksum): ?Classification
+    {
+        return $this->findOneBy(['checksum' => $checksum]);
+    }
 }

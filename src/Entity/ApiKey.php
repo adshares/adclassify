@@ -5,6 +5,7 @@ namespace Adshares\Adclassify\Entity;
 use Adshares\Adclassify\Entity\Traits\SoftDeleteableEntity;
 use Adshares\Adclassify\Entity\Traits\TimestampableEntity;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -16,6 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     indexes={@ORM\Index(name="user_idx", columns={"user_id"})}
  * )
  * @UniqueEntity(fields={"name"}, message="There is already an api key with this name")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
 class ApiKey
 {
@@ -42,7 +44,7 @@ class ApiKey
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=8)
+     * @ORM\Column(type="string", length=16)
      * @Assert\NotBlank()
      */
     private $name;
