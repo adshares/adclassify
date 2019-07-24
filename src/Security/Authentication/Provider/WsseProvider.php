@@ -46,7 +46,7 @@ class WsseProvider implements AuthenticationProviderInterface
         /* @var $token WsseUserToken */
         $apiKey = $this->apiKeyRepository->findByName($token->getUsername());
         if ($apiKey) {
-            $this->logger->debug(sprintf('WSSE: API key %s #%d', $apiKey->getUser()->getEmail(), $apiKey->getId()));
+            $this->logger->debug(sprintf('WSSE: API key %s #%d', $apiKey->getName(), $apiKey->getId()));
         } else {
             $this->logger->debug(sprintf('WSSE: Cannot find API key %s', $token->getUsername()));
         }
@@ -57,6 +57,7 @@ class WsseProvider implements AuthenticationProviderInterface
                 $token->getCreated(),
                 $apiKey->getSecret()
             )) {
+            $this->logger->debug(sprintf('WSSE: digest valid for %s', $apiKey->getUser()->getEmail()));
             $authenticatedToken = new WsseUserToken($apiKey->getUser()->getRoles());
             $authenticatedToken->setUser($apiKey->getUser());
 

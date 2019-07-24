@@ -62,6 +62,8 @@ class WsseListener
         try {
             $authToken = $this->authenticationManager->authenticate($token);
             $this->tokenStorage->setToken($authToken);
+
+            return;
         } catch (AuthenticationException $failed) {
 //            $token = $this->tokenStorage->getToken();
 //            if ($token instanceof WsseUserToken) {
