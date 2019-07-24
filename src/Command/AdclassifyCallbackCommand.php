@@ -11,7 +11,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class AdclassifyCallbackCommand extends Command
 {
-    protected static $defaultName = 'adclassify:callback';
+    protected static $defaultName = 'app:callback';
 
     protected function configure()
     {

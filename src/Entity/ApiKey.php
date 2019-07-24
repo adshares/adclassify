@@ -44,7 +44,7 @@ class ApiKey
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=16)
+     * @ORM\Column(type="string", length=11)
      * @Assert\NotBlank()
      */
     private $name;

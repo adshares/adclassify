@@ -137,6 +137,11 @@ class User implements UserInterface, \Serializable
         return $this->apiKeys;
     }
 
+    public function addApiKey(ApiKey $apiKey): void
+    {
+        $this->apiKeys->add($apiKey);
+    }
+
     /**
      * Returns the salt that was originally used to encode the password.
      *
