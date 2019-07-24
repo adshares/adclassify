@@ -3,6 +3,8 @@
 namespace Adshares\Adclassify\Security\Firewall;
 
 use Adshares\Adclassify\Security\Authentication\Token\WsseUserToken;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
@@ -21,25 +23,33 @@ class WsseListener
      */
     protected $authenticationManager;
 
+    protected $logger;
+
     public function __construct(
         TokenStorageInterface $tokenStorage,
-        AuthenticationManagerInterface $authenticationManager
+        AuthenticationManagerInterface $authenticationManager,
+        LoggerInterface $logger = null
     ) {
+        if ($logger === null) {
+            $logger = new NullLogger();
+        }
         $this->tokenStorage = $tokenStorage;
         $this->authenticationManager = $authenticationManager;
+        $this->logger = $logger;
     }
 
     public function __invoke(RequestEvent $event): void
     {
         $request = $event->getRequest();
 
+        $this->logger->debug(sprintf('X-WSSE: %s', $request->headers->get('x-wsse')));
         // phpcs:ignore Generic.Files.LineLength.TooLong
         $wsseRegex = '/UsernameToken Username="(?P<username>[^"]+)", PasswordDigest="(?P<digest>[^"]+)", Nonce="(?P<nonce>[a-zA-Z0-9+\/]+={0,2})", Created="(?P<created>[^"]+)"/';
         if (!$request->headers->has('x-wsse') || 1 !== preg_match(
-            $wsseRegex,
-            $request->headers->get('x-wsse'),
-            $matches
-        )) {
+                $wsseRegex,
+                $request->headers->get('x-wsse'),
+                $matches
+            )) {
             return;
         }
 

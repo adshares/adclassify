@@ -6,6 +6,8 @@ use Adshares\Adclassify\Repository\ApiKeyRepository;
 use Adshares\Adclassify\Security\Authentication\Token\WsseUserToken;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Cache\InvalidArgumentException;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -24,23 +26,33 @@ class WsseProvider implements AuthenticationProviderInterface
      */
     private $cachePool;
 
-    public function __construct(ApiKeyRepository $apiKeyRepository, CacheItemPoolInterface $cachePool)
-    {
+    protected $logger;
+
+    public function __construct(
+        ApiKeyRepository $apiKeyRepository,
+        CacheItemPoolInterface $cachePool,
+        LoggerInterface $logger = null
+    ) {
+        if ($logger === null) {
+            $logger = new NullLogger();
+        }
         $this->apiKeyRepository = $apiKeyRepository;
         $this->cachePool = $cachePool;
+        $this->logger = $logger;
     }
 
     public function authenticate(TokenInterface $token): TokenInterface
     {
         /* @var $token WsseUserToken */
         $apiKey = $this->apiKeyRepository->findByName($token->getUsername());
+        $this->logger->debug(sprintf('WSSE: API key %s #%d', $apiKey->getUser()->getEmail(), $apiKey->getId()));
 
         if ($apiKey && $this->validateDigest(
-            $token->getDigest(),
-            $token->getNonce(),
-            $token->getCreated(),
-            $apiKey->getSecret()
-        )) {
+                $token->getDigest(),
+                $token->getNonce(),
+                $token->getCreated(),
+                $apiKey->getSecret()
+            )) {
             $authenticatedToken = new WsseUserToken($apiKey->getUser()->getRoles());
             $authenticatedToken->setUser($apiKey->getUser());
 
@@ -59,6 +71,7 @@ class WsseProvider implements AuthenticationProviderInterface
 
         // Expire timestamp after 5 minutes
         if (time() - strtotime($created) > self::NONCE_LIFETIME) {
+            $this->logger->debug(sprintf('WSSE: Expire timestamp after 5 minutes (%s)', $created));
             return false;
         }
 
@@ -66,12 +79,14 @@ class WsseProvider implements AuthenticationProviderInterface
         try {
             $cacheItem = $this->cachePool->getItem(md5($nonce));
         } catch (InvalidArgumentException $exception) {
+            $this->logger->debug(sprintf('WSSE: Invalid nonce (%s)', $nonce));
             throw new AuthenticationException('Invalid nonce');
         }
 
         // Validate that the nonce is *not* in cache
         // if it is, this could be a replay attack
         if ($cacheItem->isHit()) {
+            $this->logger->debug(sprintf('WSSE: Previously used nonce detected (%s)', $nonce));
             throw new AuthenticationException('Previously used nonce detected');
         }
 
@@ -81,6 +96,7 @@ class WsseProvider implements AuthenticationProviderInterface
 
         // Validate Secret
         $expected = base64_encode(hash('sha256', base64_decode($nonce) . $created . $secret, true));
+        $this->logger->debug(sprintf('WSSE: hash expected: %s', $expected));
 
         return hash_equals($expected, $digest);
     }
