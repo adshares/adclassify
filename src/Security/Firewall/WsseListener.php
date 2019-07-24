@@ -3,6 +3,7 @@
 namespace Adshares\Adclassify\Security\Firewall;
 
 use Adshares\Adclassify\Security\Authentication\Token\WsseUserToken;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -52,10 +53,14 @@ class WsseListener
             $authToken = $this->authenticationManager->authenticate($token);
             $this->tokenStorage->setToken($authToken);
         } catch (AuthenticationException $failed) {
-            $token = $this->tokenStorage->getToken();
-            if ($token instanceof WsseUserToken) {
-                $this->tokenStorage->setToken(null);
-            }
+//            $token = $this->tokenStorage->getToken();
+//            if ($token instanceof WsseUserToken) {
+//                $this->tokenStorage->setToken(null);
+//            }
         }
+
+        $response = new Response();
+        $response->setStatusCode(Response::HTTP_FORBIDDEN);
+        $event->setResponse($response);
     }
 }

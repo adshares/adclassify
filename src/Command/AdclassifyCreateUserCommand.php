@@ -71,8 +71,8 @@ class AdclassifyCreateUserCommand extends Command
         $io->success([
             sprintf('%s %s (%s) has been created', $role, $user->getFullName(), $user->getEmail()),
             sprintf('Password: %s', $password),
-            sprintf('API key: %s', $apiKey->getName()),
-            sprintf('API secret: %s', $apiKey->getSecret()),
+            sprintf('API key name: %s', $apiKey->getName()),
+            sprintf('API key secret: %s', $apiKey->getSecret()),
         ]);
     }
 }
