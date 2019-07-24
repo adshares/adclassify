@@ -136,19 +136,14 @@ class Request
         $this->user = $user;
     }
 
-    public function getClassification(): Classification
-    {
-        return $this->classification;
-    }
-
     public function setClassification(Classification $classification): void
     {
         $this->classification = $classification;
     }
 
-    public function getCallbackUrl(): string
+    public function getClassification(): Classification
     {
-        return $this->callbackUrl;
+        return $this->classification;
     }
 
     public function setCallbackUrl(string $callbackUrl): void
@@ -156,9 +151,9 @@ class Request
         $this->callbackUrl = $callbackUrl;
     }
 
-    public function getServeUrl(): string
+    public function getCallbackUrl(): string
     {
-        return $this->serveUrl;
+        return $this->callbackUrl;
     }
 
     public function setServeUrl(string $serveUrl): void
@@ -166,9 +161,9 @@ class Request
         $this->serveUrl = $serveUrl;
     }
 
-    public function getType(): string
+    public function getServeUrl(): string
     {
-        return $this->type;
+        return $this->serveUrl;
     }
 
     public function setType(string $type): void
@@ -176,9 +171,9 @@ class Request
         $this->type = $type;
     }
 
-    public function getLandingUrl(): string
+    public function getType(): string
     {
-        return $this->landingUrl;
+        return $this->type;
     }
 
     public function setLandingUrl(string $landingUrl): void
@@ -186,9 +181,9 @@ class Request
         $this->landingUrl = $landingUrl;
     }
 
-    public function getCampaignId(): string
+    public function getLandingUrl(): string
     {
-        return $this->campaignId;
+        return $this->landingUrl;
     }
 
     public function setCampaignId(string $campaignId): void
@@ -196,9 +191,12 @@ class Request
         $this->campaignId = $campaignId;
     }
 
-    public function getBannerId(): string
+    public function getCampaignId(): string
     {
-        return $this->bannerId;
+        if (gettype($this->campaignId) === 'resource') {
+            $this->campaignId = stream_get_contents($this->campaignId);
+        }
+        return $this->campaignId;
     }
 
     public function setBannerId(string $bannerId): void
@@ -206,9 +204,12 @@ class Request
         $this->bannerId = $bannerId;
     }
 
-    public function getStatus(): int
+    public function getBannerId(): string
     {
-        return $this->status;
+        if (gettype($this->bannerId) === 'resource') {
+            $this->bannerId = stream_get_contents($this->bannerId);
+        }
+        return $this->bannerId;
     }
 
     public function setStatus(int $status): void
@@ -216,9 +217,9 @@ class Request
         $this->status = $status;
     }
 
-    public function getInfo(): string
+    public function getStatus(): int
     {
-        return $this->info;
+        return $this->status;
     }
 
     public function setInfo(string $info): void
@@ -226,12 +227,17 @@ class Request
         $this->info = $info;
     }
 
+    public function getInfo(): ?string
+    {
+        return $this->info;
+    }
+
     public function setSentAt(\DateTime $sentAt): void
     {
         $this->sentAt = $sentAt;
     }
 
-    public function getSentAt(): \DateTime
+    public function getSentAt(): ?\DateTime
     {
         return $this->sentAt;
     }

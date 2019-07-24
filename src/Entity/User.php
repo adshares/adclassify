@@ -119,6 +119,16 @@ class User implements UserInterface, \Serializable
         return array_unique($roles);
     }
 
+    public function setFullName(string $fullName): void
+    {
+        $this->fullName = $fullName;
+    }
+
+    public function getFullName(): ?string
+    {
+        return $this->fullName;
+    }
+
     /**
      * @return Collection|ApiKey[]
      */

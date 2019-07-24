@@ -1,0 +1,35 @@
+{% extends 'regular_page.html.twig' %}
+
+{% block content %}
+    <div class="container">
+        <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Client</th>
+                    <th scope="col">Hash</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Keywords</th>
+                    <th scope="col">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for request in requests %}
+                    <tr>
+                        <th scope="row">{{ request.id }}</th>
+                        <td>{{ request.createdAt|date('Y-m-d H:m:s') }}</td>
+                        <td>{{ request.user.fullName }}</td>
+                        <td><code>{{ request.classification.checksum|hex }}</code></td>
+                        <td><span class="badge badge-rs{{ request.status }}"
+                                  title="{{ request.info }}">{{ request.status|requestStatus }}</span></td>
+                        <td>{{ request.classification.keywords|keywords }}</td>
+                        <td><a class="btn btn-primary btn-sm" href="#">Classify</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

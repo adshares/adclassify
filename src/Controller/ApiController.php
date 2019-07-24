@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class ApiController extends AbstractController
@@ -125,20 +126,13 @@ class ApiController extends AbstractController
     {
         $entityManager = $this->getDoctrine()->getManager();
 
+        $duplicates = $this->requestRepository->findPendingDuplicates($this->getUser(), hex2bin($banner['id']));
+
         $classification = $this->classificationRepository->findByChecksum(hex2bin($banner['checksum']));
         if ($classification === null) {
             $classification = new Classification();
             $classification->setChecksum(hex2bin($banner['checksum']));
             $entityManager->persist($classification);
-        }
-
-        foreach ($this->requestRepository->findPendingDuplicates(
-            $this->getUser(),
-            hex2bin($banner['id'])
-        ) as $duplicate) {
-            /* @var $duplicate ClassificationRequest */
-            $duplicate->setStatus(ClassificationRequest::STATUS_CANCELED);
-            $entityManager->persist($duplicate);
         }
 
         $request = new ClassificationRequest();
@@ -153,6 +147,14 @@ class ApiController extends AbstractController
         $request->setServeUrl($banner['serve_url']);
         $entityManager->persist($request);
 
+        $entityManager->flush();
+
+        foreach ($duplicates as $duplicate) {
+            /* @var $duplicate ClassificationRequest */
+            $duplicate->setStatus(ClassificationRequest::STATUS_CANCELED);
+            $duplicate->setInfo(sprintf('Overwritten by request #%d', $request->getId()));
+            $entityManager->persist($duplicate);
+        }
         $entityManager->flush();
     }
 }

@@ -36,6 +36,15 @@ info:
     requirements:
         _format:  'json|txt'
 
+# classification
+classification:
+    path: /classification
+    controller: Adshares\Adclassify\Controller\ClassificationController::index
+
+classification_status:
+    path: /classification/status
+    controller: Adshares\Adclassify\Controller\ClassificationController::status
+
 # admin page
 admin:
     path: /admin
