@@ -36,7 +36,7 @@ class ClassificationController extends AbstractController
 
     public function status(Request $request): Response
     {
-        $limit = 100;
+        $limit = 50;
         $page = max(1, (int)$request->query->get('page', 1));
         $sort = 'id';
         $order = 'desc';
