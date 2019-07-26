@@ -20,11 +20,15 @@ class Request
 {
     use TimestampableEntity;
 
-    const STATUS_NEW = 1;
-    const STATUS_CANCELED = 2;
-    const STATUS_REJECTED = 3;
-    const STATUS_FAILED = 4;
     const STATUS_PROCESSED = 0;
+    const STATUS_NEW = 1;
+    const STATUS_PENDING = 2;
+    const STATUS_REJECTED = 3;
+    const STATUS_CANCELED = 4;
+
+    const CALLBACK_SUCCESS = 0;
+    const CALLBACK_PENDING = 1;
+    const CALLBACK_FAILED = 2;
 
     /**
      * @var int
@@ -114,6 +118,13 @@ class Request
      * @ORM\Column(type="string", nullable=true)
      */
     private $info;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(type="integer", length=3, nullable=true)
+     */
+    private $callbackStatus;
 
     /**
      * @var \DateTime
@@ -223,6 +234,21 @@ class Request
         return $this->status;
     }
 
+    public function isPending(): bool
+    {
+        return $this->status == self::STATUS_PENDING;
+    }
+
+    public function isProcessed(): bool
+    {
+        return $this->status == self::STATUS_PROCESSED;
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status == self::STATUS_REJECTED;
+    }
+
     public function setInfo(?string $info): void
     {
         $this->info = $info;
@@ -231,6 +257,21 @@ class Request
     public function getInfo(): ?string
     {
         return $this->info;
+    }
+
+    public function setCallbackStatus(?int $callbackStatus): void
+    {
+        $this->callbackStatus = $callbackStatus;
+    }
+
+    public function getCallbackStatus(): ?int
+    {
+        return $this->callbackStatus;
+    }
+
+    public function isSent(): bool
+    {
+        return $this->callbackStatus === self::CALLBACK_SUCCESS;
     }
 
     public function setSentAt(?\DateTime $sentAt): void

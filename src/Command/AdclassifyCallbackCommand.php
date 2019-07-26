@@ -122,8 +122,6 @@ class AdclassifyCallbackCommand extends Command
         foreach ($adservers as $url => $data) {
 
             $success = false;
-            $info = 'Unknown error';
-
             try {
                 $response = $httpClient->request('PATCH', $url, [
                     'headers' => [
@@ -134,27 +132,23 @@ class AdclassifyCallbackCommand extends Command
 
                 if (204 === $response->getStatusCode()) {
                     $success = true;
-                    $info = null;
+                    $sent += count($data);
                 }
 
             } catch (TransportExceptionInterface $exception) {
                 $success = false;
-                $info = $exception->getMessage();
                 $io->warning($exception->getMessage());
             }
 
             foreach ($data as $row) {
                 /* @var $request ClassificationRequest */
                 $request = $origin[$url][$row['id']];
-                if ($success) {
-                    ++$sent;
-                    $request->setSentAt(new \DateTime());
-                    $request->setInfo(null);
-                } else {
-                    $request->setStatus(ClassificationRequest::STATUS_FAILED);
-                    $request->setSentAt(null);
-                    $request->setInfo($info);
-                }
+                $request->setSentAt(new \DateTime());
+                $request->setCallbackStatus(
+                    $success ?
+                        ClassificationRequest::CALLBACK_SUCCESS :
+                        ClassificationRequest::CALLBACK_FAILED
+                );
                 $this->requestRepository->saveBatch($origin[$url]);
             }
         }

@@ -13,6 +13,7 @@ class ClassifyExtension extends AbstractExtension
         return [
             new TwigFilter('hex', [$this, 'formatHexData']),
             new TwigFilter('requestStatus', [$this, 'formatRequestStatus']),
+            new TwigFilter('callbackStatus', [$this, 'formatCallbackStatus']),
             new TwigFilter('keywords', [$this, 'formatKeywords']),
         ];
     }
@@ -34,11 +35,29 @@ class ClassifyExtension extends AbstractExtension
                 return 'Processed';
             case Request::STATUS_NEW:
                 return 'New';
-            case Request::STATUS_CANCELED:
-                return 'Canceled';
+            case Request::STATUS_PENDING:
+                return 'Pending';
             case Request::STATUS_REJECTED:
                 return 'Rejected';
-            case Request::STATUS_FAILED:
+            case Request::STATUS_CANCELED:
+                return 'Canceled';
+            default:
+                return 'Unknown';
+        }
+    }
+
+    public static function formatCallbackStatus(?int $status)
+    {
+        if ($status === null) {
+            return 'N/A';
+        }
+
+        switch ($status) {
+            case Request::CALLBACK_SUCCESS:
+                return 'Success';
+            case Request::CALLBACK_PENDING:
+                return 'Pending';
+            case Request::CALLBACK_FAILED:
                 return 'Failed';
             default:
                 return 'Unknown';
@@ -49,7 +68,7 @@ class ClassifyExtension extends AbstractExtension
     {
         $dicts = [];
         foreach ($keywords as $name => $dict) {
-            $value[] =  $name . ': ' .  implode(', ', $dict);
+            $dicts[] =  $name . ': ' .  implode(', ', $dict);
         }
 
         return empty($dicts) ? '-' : implode(' | ', $dicts);

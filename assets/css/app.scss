@@ -9,8 +9,7 @@ $font-family-sans-serif: Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Ro
 
 @import "form";
 
-
-.badge-rs {
+.badge-rs, .badge-rs1 {
     @extend .badge-dark
 }
 
@@ -18,14 +17,30 @@ $font-family-sans-serif: Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Ro
     @extend .badge-success
 }
 
-.badge-rs1 {
+.badge-rs2 {
     @extend .badge-primary
 }
 
-.badge-rs2 {
+.badge-rs3 {
+    @extend .badge-danger
+}
+
+.badge-rs4 {
     @extend .badge-warning
 }
 
-.badge-rs3, .badge-rs4 {
+.badge-rs, .badge-rs1 {
+    @extend .badge-dark
+}
+
+.badge-rcs0 {
+    @extend .badge-success
+}
+
+.badge-rcs1 {
+    @extend .badge-primary
+}
+
+.badge-rcs2 {
     @extend .badge-danger
 }

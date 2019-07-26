@@ -10,13 +10,16 @@ use Adshares\Adclassify\Repository\TaxonomyRepository;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use Symfony\Component\HttpKernel\KernelEvents;
 
-class ApiController extends AbstractController
+class ApiController extends AbstractController implements EventSubscriberInterface
 {
     /**
      * @var LoggerInterface
@@ -46,6 +49,21 @@ class ApiController extends AbstractController
         $this->logger = $logger;
     }
 
+    public static function getSubscribedEvents()
+    {
+        return [KernelEvents::TERMINATE => 'onTerminate'];
+    }
+
+    public function onTerminate(TerminateEvent $event)
+    {
+        if (
+            $event->getRequest()->get('_route') === 'api_requests' &&
+            $event->getResponse()->getStatusCode() !== Response::HTTP_NO_CONTENT
+        ) {
+            $this->processNewRequests($event->getRequest());
+        }
+    }
+
     public function getTaxonomy(TaxonomyRepository $repository): Response
     {
         $taxonomy = [
@@ -71,11 +89,14 @@ class ApiController extends AbstractController
         foreach ($data['banners'] as $banner) {
             $this->validBanner($banner);
         }
+
+        $response = new JsonResponse(null, Response::HTTP_NO_CONTENT);
+
         foreach ($data['banners'] as $banner) {
             $this->handleBanner($banner, $data['callback_url']);
         }
 
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        return $response;
     }
 
     private function validRequest(array $request): void
@@ -156,5 +177,12 @@ class ApiController extends AbstractController
             $entityManager->persist($duplicate);
         }
         $entityManager->flush();
+    }
+
+    private function processNewRequests(Request $request)
+    {
+//        $data = json_decode($request->getContent(), true);
+
+        //TODO check contant and checksums
     }
 }

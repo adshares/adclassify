@@ -10,9 +10,9 @@
                     <th scope="col">Date</th>
                     <th scope="col">Client</th>
                     <th scope="col">Hash</th>
-                    <th scope="col">Status</th>
                     <th scope="col">Keywords</th>
-                    <th scope="col">Action</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Callback</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -22,10 +22,20 @@
                         <td>{{ request.createdAt|date('Y-m-d H:m:s') }}</td>
                         <td>{{ request.user.fullName }}</td>
                         <td><code>{{ request.classification.checksum|hex }}</code></td>
-                        <td><span class="badge badge-rs{{ request.status }}"
-                                  title="{{ request.info }}">{{ request.status|requestStatus }}</span></td>
-                        <td>{{ request.classification.keywords|keywords }}</td>
-                        <td><a class="btn btn-primary btn-sm" href="#">Classify</a></td>
+                        <td>
+                            {% if request.isPending %}
+                                <a class="btn btn-primary btn-sm" href="#">Classify</a>
+                            {% else %}
+                                <small>{{ request.classification.keywords|keywords }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge badge-rs{{ request.status }}"
+                                  title="{{ request.info }}">{{ request.status|requestStatus }}</span>
+                        </td>
+                        <td>
+                            <span class="badge badge-rcs{{ request.callbackStatus }}" title="{{ request.sentAt|date('Y-m-d H:m:s') }}">{{ request.callbackStatus|callbackStatus }}</span>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
