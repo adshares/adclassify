@@ -21,7 +21,7 @@ class Request
     use TimestampableEntity;
 
     const STATUS_NEW = 1;
-    const STATUS_CANCELED = 1;
+    const STATUS_CANCELED = 2;
     const STATUS_REJECTED = 3;
     const STATUS_FAILED = 4;
     const STATUS_PROCESSED = 0;
