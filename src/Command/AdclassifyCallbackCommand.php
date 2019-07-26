@@ -129,7 +129,7 @@ class AdclassifyCallbackCommand extends Command
                     'headers' => [
                         'Content-Type' => 'application/json',
                     ],
-                    'body' => $data,
+                    'body' => json_encode($data),
                 ]);
 
                 if (204 === $response->getStatusCode()) {
