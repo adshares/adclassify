@@ -19,6 +19,7 @@
 		"ext-curl": "*",
 		"ext-iconv": "*",
 		"ext-json": "*",
+		"ext-sodium": "*",
 		"gedmo/doctrine-extensions": "^2.4",
 		"psr/log": "^1.0",
 		"stof/doctrine-extensions-bundle": "^1.3",

@@ -20,7 +20,7 @@ class TaxonomyRepository
     {
         return [
             'safe' => 'Safe',
-            'ntsf' => 'NTSF',
+            'nsfw' => 'NSFW',
             'gambling' => 'Gambling',
             'crypto' => 'Crypto',
         ];

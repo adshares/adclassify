@@ -30,7 +30,7 @@ class AdclassifyCreateUserCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Add a short description for your command')
+            ->setDescription('Creates a new user')
             ->addArgument('email', InputArgument::OPTIONAL, 'User email address')
             ->addArgument('fullname', InputArgument::OPTIONAL, 'User full name')
             ->addArgument('password', InputArgument::OPTIONAL, 'User password')

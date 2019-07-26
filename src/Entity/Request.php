@@ -21,8 +21,9 @@ class Request
     use TimestampableEntity;
 
     const STATUS_NEW = 1;
-    const STATUS_REJECTED = 2;
-    const STATUS_CANCELED = 3;
+    const STATUS_CANCELED = 1;
+    const STATUS_REJECTED = 3;
+    const STATUS_FAILED = 4;
     const STATUS_PROCESSED = 0;
 
     /**
@@ -222,7 +223,7 @@ class Request
         return $this->status;
     }
 
-    public function setInfo(string $info): void
+    public function setInfo(?string $info): void
     {
         $this->info = $info;
     }
@@ -232,7 +233,7 @@ class Request
         return $this->info;
     }
 
-    public function setSentAt(\DateTime $sentAt): void
+    public function setSentAt(?\DateTime $sentAt): void
     {
         $this->sentAt = $sentAt;
     }

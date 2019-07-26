@@ -2,6 +2,7 @@
 
 namespace Adshares\Adclassify\Repository;
 
+use Adshares\Adclassify\Entity\Classification;
 use Adshares\Adclassify\Entity\Request;
 use Adshares\Adclassify\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -44,5 +45,21 @@ class RequestRepository extends ServiceEntityRepository
             'bannerId' => $bannerId,
             'status' => Request::STATUS_NEW,
         ]);
+    }
+
+    public function findReadyToCallback(int $limit = null): array
+    {
+        return $this->findBy([
+            'status' => [Request::STATUS_PROCESSED, Request::STATUS_REJECTED],
+            'sentAt' => null,
+        ], null, $limit);
+    }
+
+    public function saveBatch(array $requests): void
+    {
+        foreach ($requests as $request) {
+            $this->_em->persist($request);
+        }
+        $this->_em->flush();
     }
 }

@@ -28,5 +28,8 @@ services:
         arguments: ['@security.token_storage', '@security.authentication.manager']
         public: false
 
+    Adshares\Adclassify\Service\Signer:
+        arguments: ['%env(CLASSIFIER_SECRET_KEY)%']
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
