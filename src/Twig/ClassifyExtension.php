@@ -34,10 +34,12 @@ class ClassifyExtension extends AbstractExtension
                 return 'Processed';
             case Request::STATUS_NEW:
                 return 'New';
-            case Request::STATUS_REJECTED:
-                return 'Rejected';
             case Request::STATUS_CANCELED:
                 return 'Canceled';
+            case Request::STATUS_REJECTED:
+                return 'Rejected';
+            case Request::STATUS_FAILED:
+                return 'Failed';
             default:
                 return 'Unknown';
         }
