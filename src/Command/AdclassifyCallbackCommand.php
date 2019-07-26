@@ -96,8 +96,16 @@ class AdclassifyCallbackCommand extends Command
             $id = bin2hex($request->getBannerId());
             $data = ['id' => $id];
             if ($request->getStatus() === ClassificationRequest::STATUS_PROCESSED) {
-                $data['keywords'] = $request->getClassification()->getKeywords();
-                $data['signature'] = $this->signer->signClassification(clone $request->getClassification());
+                $classification = clone $request->getClassification();
+                if (!$classification->isProcessed()) {
+                    throw new \RuntimeException(sprintf(
+                        'Classification %s [#%d] is not processed',
+                        bin2hex($classification->getChecksum()),
+                        $classification->getId()
+                    ));
+                }
+                $data['keywords'] = $classification->getKeywords();
+                $data['signature'] = $this->signer->signClassification($classification);
             } else {
                 $data['error'] = [
                     'code' => $request->getStatus(),
@@ -147,7 +155,7 @@ class AdclassifyCallbackCommand extends Command
                     $request->setSentAt(null);
                     $request->setInfo($info);
                 }
-                $this->requestRepository->saveBatch($origin[$url]);exit;
+                $this->requestRepository->saveBatch($origin[$url]);
             }
         }
 
