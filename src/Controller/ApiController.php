@@ -68,8 +68,8 @@ class ApiController extends AbstractController implements EventSubscriberInterfa
     {
         $taxonomy = [
             'meta' => [
-                'name' => getenv('TAXONOMY_NAME'),
-                'version' => getenv('TAXONOMY_VERSION'),
+                'name' => $_ENV['TAXONOMY_NAME'],
+                'version' => $_ENV['TAXONOMY_VERSION'],
             ],
             'data' => $repository->getTaxonomy(),
         ];

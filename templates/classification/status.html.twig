@@ -34,13 +34,19 @@
                                   title="{{ request.info }}">{{ request.status|requestStatus }}</span>
                         </td>
                         <td>
-                            <span class="badge badge-rcs{{ request.callbackStatus }}" title="{{ request.sentAt|date('Y-m-d H:m:s') }}">{{ request.callbackStatus|callbackStatus }}</span>
+                            <span class="badge badge-rcs{{ request.callbackStatus }}"
+                                  title="{{ request.sentAt|date('Y-m-d H:m:s') }}">{{ request.callbackStatus|callbackStatus }}</span>
                         </td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
         </div>
+        {% if not requests.getIterator.count %}
+            <div class="alert alert-warning" role="alert">
+                The list of requests <b>is empty</b>.
+            </div>
+        {% endif %}
         {% include 'utils/pagination.html.twig' with {'url': 'classification_status'} %}
     </div>
 {% endblock %}
