@@ -8,10 +8,9 @@ class TaxonomyRepository
     {
         return [
             [
-                'label' => 'Category',
                 'key' => 'category',
-                'type' => 'dict',
-                'data' => self::sanitazeData($this->getCatgories()),
+                'label' => 'Category',
+                'values' => $this->getCatgories(),
             ],
         ];
     }
@@ -19,23 +18,42 @@ class TaxonomyRepository
     public function getCatgories(): array
     {
         return [
-            'safe' => 'Safe',
-            'nsfw' => 'NSFW',
-            'gambling' => 'Gambling',
-            'crypto' => 'Crypto',
+            [
+                'key' => 'adult',
+                'label' => 'Adult',
+                'description' => 'NSFW, nudity, pornography'
+            ],
+            [
+                'key' => 'annoying',
+                'label' => 'Annoying',
+                'description' => 'Sounds, flashing, disturbing'
+            ],
+            [
+                'key' => 'crypto',
+                'label' => 'Crypto',
+                'description' => 'Cryptocurrencies, exchanges, wallets'
+            ],
+            [
+                'key' => 'drugs',
+                'label' => 'Drugs',
+                'description' => 'Medicines, dietary supplement'
+            ],
+            [
+                'key' => 'gambling',
+                'label' => 'Gambling',
+                'description' => 'Sports betting, casinos, lottery'
+            ],
+            [
+                'key' => 'investment',
+                'label' => 'Investment',
+                'description' => 'HYIPs, ICO/IEO, crowdfunding'
+            ],
+            [
+                'key' => 'malware',
+                'label' => 'Malware',
+                'description' => 'Software download, extensions'
+            ],
+            ['key' => 'safe', 'label' => 'Safe'],
         ];
-    }
-
-    private static function sanitazeData(array $data): array
-    {
-        $result = [];
-        foreach ($data as $key => $label) {
-            $result[] = [
-                'key' => $key,
-                'label' => $label,
-            ];
-        }
-
-        return $result;
     }
 }
