@@ -25,8 +25,29 @@ class Signer
 
     private function createDataMessage(string $checksum, array $data): string
     {
-        ksort($data);
+        $array = $data;
+        self::sort($array);
 
-        return hash('sha256', $checksum . json_encode($data));
+        return hash('sha256', $checksum . json_encode($array));
+    }
+
+    private static function sort(array &$array): void
+    {
+        foreach ($array as $key => &$value) {
+            if (is_array($value)) {
+                self::sort($value);
+            }
+        }
+
+        if (!empty($array) && self::isAssoc($array)) {
+            ksort($array);
+        } else {
+            sort($array);
+        }
+    }
+
+    private static function isAssoc(array $arr): bool
+    {
+        return array_keys($arr) !== range(0, count($arr) - 1);
     }
 }
