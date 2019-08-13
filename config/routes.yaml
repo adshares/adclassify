@@ -13,7 +13,7 @@ api_requests:
     requirements:
         version:  '0|1'
 
-# login page
+# security
 security_login:
     path: /login
     controller: Adshares\Adclassify\Controller\SecurityController::login
@@ -21,12 +21,15 @@ security_login:
 security_logout:
     path: /logout
 
+security_account:
+    path: /account
+    controller: Adshares\Adclassify\Controller\SecurityController::account
+
 # main pages
 index:
     path: /
     controller: Adshares\Adclassify\Controller\AppController::index
 
-# info
 info:
     path: /info.{_format}
     controller: Adshares\Adclassify\Controller\AppController::info

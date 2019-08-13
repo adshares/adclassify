@@ -16,4 +16,9 @@ class SecurityController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    public function account(): Response
+    {
+        return $this->render('security/account.html.twig', []);
+    }
 }

@@ -41,7 +41,7 @@
                                 {{ app.user.fullName }} ({{ app.user.email }})
                             </a>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" href="#">Account</a>
+                                <a class="dropdown-item" href="{{ path('security_account') }}">Account</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{{ path('security_logout') }}">Logout</a>
                             </div>
