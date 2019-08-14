@@ -9,7 +9,9 @@
                     {{ campaign.user.fullName }}
                 </div>
                 <div class="navbar-text">
-                    <a href="{{ campaign.landingUrl }}" target="_blank">{{ campaign.landingUrl }}</a><br/>
+                    <a href="{{ campaign.landingUrl }}"
+                       target="_blank"
+                       title="{{ campaign.landingUrl }}">{{ campaign.landingUrl|length > 50 ? campaign.landingUrl|slice(0, 50) ~ '…' : campaign.landingUrl }}</a><br/>
                     id: <code>{{ campaign.campaignId|hex }}</code>
                 </div>
                 <div class="navbar-text small text-right">
@@ -63,6 +65,7 @@
                     {% endfor %}
                 </div>
                 {% for request in requests %}
+                    {% set scale = min(1.0, maxWidth/request.ad.width, maxHeight/request.ad.height) %}
                     <div class="row border-bottom my-2 py-2">
                         <div class="col-8">
                             <div class="banner-box mt-2"
@@ -70,7 +73,7 @@
                                 <div style="
                                         width: {{ request.ad.width }}px;
                                         height: {{ request.ad.height }}px;
-                                        transform:scale({{ min(maxWidth/request.ad.width, maxHeight/request.ad.height) }});
+                                        transform:scale({{ scale }});
                                         ">
                                     {% if request.type == 'image' %}
                                         <img src="{{ request.serveUrl }}" border="0" alt=""/>
