@@ -36,7 +36,14 @@ class Classification
     private $id;
 
     /**
-     * @var string
+     * @var string|resource
+     *
+     * @ORM\Column(type="blob", nullable=true)
+     */
+    private $content;
+
+    /**
+     * @var string|resource
      *
      * @ORM\Column(type="binary", length=20)
      * @Assert\NotBlank()
@@ -63,6 +70,19 @@ class Classification
         return $this->id;
     }
 
+    public function getContent(): ?string
+    {
+        if (gettype($this->content) === 'resource') {
+            $this->content = stream_get_contents($this->content);
+        }
+        return $this->content;
+    }
+
+    public function setContent(?string $content): void
+    {
+        $this->content = $content;
+    }
+
     public function getChecksum(): string
     {
         if (gettype($this->checksum) === 'resource') {
@@ -86,12 +106,12 @@ class Classification
         $this->processed = $processed;
     }
 
-    public function getKeywords(): array
+    public function getKeywords(): ?array
     {
         return $this->keywords;
     }
 
-    public function setKeywords(array $keywords): void
+    public function setKeywords(?array $keywords): void
     {
         $this->keywords = $keywords;
     }

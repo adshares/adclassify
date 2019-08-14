@@ -23,6 +23,11 @@ class Signer
         return bin2hex(sodium_crypto_sign_detached($message, $key_secret));
     }
 
+    public function checkContent(string $content, string $checksum): bool
+    {
+        return true;
+    }
+
     private function createDataMessage(string $checksum, array $data): string
     {
         $array = $data;

@@ -7,10 +7,12 @@ use Adshares\Adclassify\Entity\Request as ClassificationRequest;
 use Adshares\Adclassify\Repository\ClassificationRepository;
 use Adshares\Adclassify\Repository\RequestRepository;
 use Adshares\Adclassify\Repository\TaxonomyRepository;
+use Adshares\Adclassify\Service\Signer;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,6 +20,8 @@ use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class ApiController extends AbstractController implements EventSubscriberInterface
 {
@@ -36,9 +40,17 @@ class ApiController extends AbstractController implements EventSubscriberInterfa
      */
     private $requestRepository;
 
+    /**
+     * @var Signer
+     */
+    private $signer;
+
+    private $newRequests = [];
+
     public function __construct(
         ClassificationRepository $classificationRepository,
         RequestRepository $requestRepository,
+        Signer $signer,
         LoggerInterface $logger
     ) {
         if ($logger === null) {
@@ -46,6 +58,7 @@ class ApiController extends AbstractController implements EventSubscriberInterfa
         }
         $this->classificationRepository = $classificationRepository;
         $this->requestRepository = $requestRepository;
+        $this->signer = $signer;
         $this->logger = $logger;
     }
 
@@ -58,9 +71,9 @@ class ApiController extends AbstractController implements EventSubscriberInterfa
     {
         if (
             $event->getRequest()->get('_route') === 'api_requests' &&
-            $event->getResponse()->getStatusCode() !== Response::HTTP_NO_CONTENT
+            $event->getResponse()->getStatusCode() === Response::HTTP_NO_CONTENT
         ) {
-            $this->processNewRequests($event->getRequest());
+            $this->processNewRequests();
         }
     }
 
@@ -177,12 +190,55 @@ class ApiController extends AbstractController implements EventSubscriberInterfa
             $entityManager->persist($duplicate);
         }
         $entityManager->flush();
+
+        $this->newRequests[] = $request;
     }
 
-    private function processNewRequests(Request $request)
+    private function processNewRequests(): void
     {
-//        $data = json_decode($request->getContent(), true);
+        $entityManager = $this->getDoctrine()->getManager();
+        foreach ($this->newRequests as $request) {
+            /* @var $request ClassificationRequest */
+            $request->setInfo(null);
+            if ($request->getClassification()->getContent() !== null) {
+                if ($request->getClassification()->isProcessed()) {
+                    $request->setStatus(ClassificationRequest::CALLBACK_SUCCESS);
+                    $request->setInfo('Existing classification was used');
+                } else {
+                    $request->setStatus(ClassificationRequest::STATUS_PENDING);
+                }
+            } else {
+                if (($content = $this->downloadContent($request)) !== null) {
+                    $request->getClassification()->setContent($content);
+                    $request->setStatus(ClassificationRequest::STATUS_PENDING);
+                } else {
+                    $request->setStatus(ClassificationRequest::STATUS_REJECTED);
+                }
+            }
+            $entityManager->persist($request);
+        }
+        $entityManager->flush();
+    }
 
-        //TODO check contant and checksums
+    private function downloadContent(ClassificationRequest $request): ?string
+    {
+        $httpClient = HttpClient::create(['verify_peer' => false]);
+        $content = null;
+
+        try {
+            $response = $httpClient->request('GET', $request->getServeUrl());
+            $content = $response->getContent();
+        } catch (TransportExceptionInterface $exception) {
+            $request->setInfo($exception->getMessage());
+        } catch (HttpExceptionInterface $exception) {
+            $request->setInfo($exception->getMessage());
+        }
+
+        if ($content !== null && !$this->signer->checkContent($content, $request->getClassification()->getChecksum())) {
+            $content = null;
+            $request->setInfo('Invalid cehcksum');
+        }
+
+        return $content;
     }
 }
