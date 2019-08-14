@@ -25,7 +25,7 @@ class Signer
 
     public function checkContent(string $content, string $checksum): bool
     {
-        return true;
+        return sha1($content, true) === $checksum;
     }
 
     private function createDataMessage(string $checksum, array $data): string

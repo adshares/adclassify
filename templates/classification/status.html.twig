@@ -24,7 +24,7 @@
                         <td><code>{{ request.classification.checksum|hex }}</code></td>
                         <td>
                             {% if request.isPending %}
-                                <a class="btn btn-primary btn-sm" href="#">Classify</a>
+                                <a class="btn btn-primary btn-sm" href="{{ path('classification', {'requestId': request.id}) }}">Classify</a>
                             {% else %}
                                 <small>{{ request.classification.keywords|keywords }}</small>
                             {% endif %}

@@ -1,10 +1,33 @@
 {% extends 'regular_page.html.twig' %}
 
 {% block content %}
-    <div class="page-header">
-        <h1>Adclassify</h1>
-        <a href="{{ path('admin') }}">Admin</a>
-        <a href="{{ path('classification') }}">Classification</a>
-        <a href="{{ path('classification_status') }}">Classification Status</a>
+    <div class="container">
+        {% if campaign %}
+            {{ campaign.user.fullName }}
+            {{ campaign.landingUrl }}
+            {{ campaign.createdAt|date('Y-m-d H:m:s') }}
+            {{ campaign.updatedAt|date('Y-m-d H:m:s') }}
+        {% else %}
+            <div class="alert alert-warning" role="alert">
+                The list of pending campaigns <b>is empty</b>.
+            </div>
+        {% endif %}
+
+
+        {% for request in requests %}
+            <div>
+                <div>
+                    {% if request.type == 'image' %}
+                        <img src="{{ request.serveUrl }}" border="0" alt=""/>
+                    {% else %}
+                        <iframe src="{{ request.serveUrl }}" sandbox="allow-scripts" width="100%" height="100%"
+                                marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true"
+                                scrolling="no" frameborder="0"></iframe>
+                    {% endif %}
+                </div>
+
+            </div>
+        {% endfor %}
+
     </div>
 {% endblock %}

@@ -143,6 +143,10 @@ class ApiController extends AbstractController implements EventSubscriberInterfa
             throw new UnprocessableEntityHttpException(sprintf('Invalid banner type (in %s)', $banner['id']));
         }
 
+        if (empty($banner['size']) || !preg_match('/^\d{1,5}x\d{1,5}$/i', $banner['size'])) {
+            throw new UnprocessableEntityHttpException(sprintf('Invalid banner size (in %s)', $banner['id']));
+        }
+
         if (empty($banner['campaign_id']) || !preg_match('/^[0-9A-F]{32}$/i', $banner['campaign_id'])) {
             throw new UnprocessableEntityHttpException(sprintf('Invalid campaign id (in %s)', $banner['id']));
         }
@@ -165,6 +169,7 @@ class ApiController extends AbstractController implements EventSubscriberInterfa
         $classification = $this->classificationRepository->findByChecksum(hex2bin($banner['checksum']));
         if ($classification === null) {
             $classification = new Classification();
+            $classification->setSize($banner['size']);
             $classification->setChecksum(hex2bin($banner['checksum']));
             $entityManager->persist($classification);
         }

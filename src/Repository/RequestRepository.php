@@ -37,9 +37,32 @@ class RequestRepository extends ServiceEntityRepository
         return $this->findBy(['status' => Request::STATUS_NEW]);
     }
 
-    public function findPending(): array
+    public function findByCampaign(Request $request): array
     {
-        return $this->findBy(['status' => Request::STATUS_PENDING]);
+        return $this->findBy(
+            [
+                'status' => [Request::STATUS_PENDING, Request::STATUS_PROCESSED],
+                'user' => $request->getUser(),
+                'campaignId' => $request->getCampaignId(),
+            ],
+            ['status' => 'DESC']
+        );
+    }
+
+    public function findPrevPending(Request $request = null): ?Request
+    {
+        return $this->findOneBy(
+            ['status' => Request::CALLBACK_PENDING],
+            ['createdAt' => 'DESC']
+        );
+    }
+
+    public function findNextPending(Request $request = null): ?Request
+    {
+        return $this->findOneBy(
+            ['status' => Request::CALLBACK_PENDING],
+            ['createdAt' => 'DESC']
+        );
     }
 
     public function findPendingDuplicates(User $user, string $bannerId): array

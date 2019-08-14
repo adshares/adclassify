@@ -51,6 +51,13 @@ class Classification
     private $checksum;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=16)
+     */
+    private $size;
+
+    /**
      * @var bool
      *
      * @ORM\Column(type="boolean", options={"default": false})
@@ -94,6 +101,16 @@ class Classification
     public function setChecksum(string $checksum): void
     {
         $this->checksum = $checksum;
+    }
+
+    public function getSize(): string
+    {
+        return $this->size;
+    }
+
+    public function setSize(string $size): void
+    {
+        $this->size = $size;
     }
 
     public function isProcessed(): bool

@@ -40,13 +40,17 @@ info:
         _format:  'json|txt'
 
 # classification
-classification:
-    path: /classification
-    controller: Adshares\Adclassify\Controller\ClassificationController::index
-
 classification_status:
     path: /classification/status
     controller: Adshares\Adclassify\Controller\ClassificationController::status
+
+classification:
+    path: /classification/{requestId}
+    controller: Adshares\Adclassify\Controller\ClassificationController::index
+    defaults:
+        requestId: null
+    requirements:
+        requestId:  '\d+'
 
 # admin page
 admin:

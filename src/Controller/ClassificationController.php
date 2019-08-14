@@ -7,6 +7,7 @@ use Adshares\Adclassify\Repository\RequestRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ClassificationController extends AbstractController
 {
@@ -29,9 +30,31 @@ class ClassificationController extends AbstractController
         $this->requestRepository = $requestRepository;
     }
 
-    public function index(): Response
+    public function index(?string $requestId = null): Response
     {
-        return $this->render('classification/index.html.twig', []);
+        if ($requestId !== null) {
+            if (($request = $this->requestRepository->find($requestId)) === null) {
+                throw new NotFoundHttpException(sprintf('Cannot find request #%d', $requestId));
+            }
+        } else {
+            $request = $this->requestRepository->findNextPending();
+        }
+
+        $campaign = [];
+        $prevCampaign = $nextCampaign = null;
+
+        if ($campaign !== null) {
+            $requests = $this->requestRepository->findByCampaign($request);
+            $prevCampaign = $this->requestRepository->findNextPending($request);
+            $nextCampaign = $this->requestRepository->findPrevPending($request);
+        }
+
+        return $this->render('classification/index.html.twig', [
+            'requests' => $requests,
+            'campaign' => $request,
+            'prevCampaign' => $prevCampaign,
+            'nextCampaign' => $nextCampaign,
+        ]);
     }
 
     public function status(Request $request): Response
