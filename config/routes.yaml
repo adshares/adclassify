@@ -24,6 +24,7 @@ security_logout:
 security_account:
     path: /account
     controller: Adshares\Adclassify\Controller\SecurityController::account
+    methods: GET
 
 # main pages
 index:
@@ -43,10 +44,17 @@ info:
 classification_status:
     path: /classification/status
     controller: Adshares\Adclassify\Controller\ClassificationController::status
+    methods: GET
+
+classification_save:
+    path: /classification
+    controller: Adshares\Adclassify\Controller\ClassificationController::save
+    methods: POST
 
 classification:
     path: /classification/{requestId}
     controller: Adshares\Adclassify\Controller\ClassificationController::index
+    methods: GET
     defaults:
         requestId: null
     requirements:
@@ -56,3 +64,4 @@ classification:
 admin:
     path: /admin
     controller: Adshares\Adclassify\Controller\AdminController::index
+    methods: GET

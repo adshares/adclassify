@@ -45,24 +45,26 @@ class RequestRepository extends ServiceEntityRepository
                 'user' => $request->getUser(),
                 'campaignId' => $request->getCampaignId(),
             ],
-            ['status' => 'DESC']
+            ['status' => 'DESC', 'id' => 'ASC']
         );
     }
 
-    public function findPrevPending(Request $request = null): ?Request
+    public function findNextPending(Request $request = null, $newer = true): ?Request
     {
-        return $this->findOneBy(
-            ['status' => Request::CALLBACK_PENDING],
-            ['createdAt' => 'DESC']
-        );
-    }
+        $qb = $this->createQueryBuilder('e');
+        $qb->where('e.status = :status');
+        $qb->setParameter('status', Request::STATUS_PENDING);
+        if ($request !== null) {
+            $qb->andWhere($newer ? 'e.id > :requestId' : 'e.id < :requestId');
+            $qb->andWhere($qb->expr()->orX('e.user != :userId', 'e.campaignId != :campaignId'));
+            $qb->setParameter('requestId', $request->getId());
+            $qb->setParameter('userId', $request->getUser());
+            $qb->setParameter('campaignId', $request->getCampaignId());
+        }
+        $qb->orderBy('e.id', $newer ? 'ASC' : 'DESC');
+        $qb->setMaxResults(1);
 
-    public function findNextPending(Request $request = null): ?Request
-    {
-        return $this->findOneBy(
-            ['status' => Request::CALLBACK_PENDING],
-            ['createdAt' => 'DESC']
-        );
+        return $qb->getQuery()->getOneOrNullResult();
     }
 
     public function findPendingDuplicates(User $user, string $bannerId): array

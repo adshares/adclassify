@@ -96,7 +96,7 @@ class AdclassifyCallbackCommand extends Command
             $id = bin2hex($request->getBannerId());
             $data = ['id' => $id];
             if ($request->getStatus() === ClassificationRequest::STATUS_PROCESSED) {
-                $classification = clone $request->getClassification();
+                $classification = clone $request->getAd();
                 if (!$classification->isProcessed()) {
                     throw new \RuntimeException(sprintf(
                         'Classification %s [#%d] is not processed',

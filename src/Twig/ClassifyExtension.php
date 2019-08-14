@@ -18,7 +18,7 @@ class ClassifyExtension extends AbstractExtension
         ];
     }
 
-    public function formatHexData($data, bool $isBinary = true, bool $add0x = false, bool $uppercase = true)
+    public function formatHexData($data, bool $isBinary = true, bool $add0x = true, bool $uppercase = true)
     {
         $hex = $isBinary ? bin2hex($data) : (int)dechex($data);
         if ($uppercase) {

@@ -1,0 +1,23 @@
+
+
+#bulk-categories {
+    background: rgba($primary, .1);
+}
+
+.banner-box {
+    > div {
+        transform-origin: top left;
+        transition: all .2s ease;
+        z-index: 9999;
+        position: relative;
+
+        &:hover {
+            transform: scale(1.0) !important;
+        }
+
+        * {
+
+            z-index: 9999;
+        }
+    }
+}

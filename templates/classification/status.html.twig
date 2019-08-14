@@ -21,12 +21,12 @@
                         <th scope="row">{{ request.id }}</th>
                         <td>{{ request.createdAt|date('Y-m-d H:m:s') }}</td>
                         <td>{{ request.user.fullName }}</td>
-                        <td><code>{{ request.classification.checksum|hex }}</code></td>
+                        <td><code>{{ request.ad.checksum|hex }}</code></td>
                         <td>
                             {% if request.isPending %}
                                 <a class="btn btn-primary btn-sm" href="{{ path('classification', {'requestId': request.id}) }}">Classify</a>
                             {% else %}
-                                <small>{{ request.classification.keywords|keywords }}</small>
+                                <small>{{ request.ad.keywords|keywords }}</small>
                             {% endif %}
                         </td>
                         <td>

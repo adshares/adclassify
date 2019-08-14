@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     name="request",
  *     indexes={
  *         @ORM\Index(name="user_idx", columns={"user_id"}),
- *         @ORM\Index(name="classification_idx", columns={"classification_id"})
+ *         @ORM\Index(name="ad_idx", columns={"ad_id"})
  *     }
  * )
  */
@@ -49,13 +49,13 @@ class Request
     private $user;
 
     /**
-     * @var Classification
+     * @var Ad
      *
-     * @ORM\ManyToOne(targetEntity="Classification")
+     * @ORM\ManyToOne(targetEntity="Ad")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      * @Assert\NotBlank()
      */
-    private $classification;
+    private $ad;
 
     /**
      * @var string
@@ -148,14 +148,14 @@ class Request
         $this->user = $user;
     }
 
-    public function setClassification(Classification $classification): void
+    public function setAd(Ad $ad): void
     {
-        $this->classification = $classification;
+        $this->ad = $ad;
     }
 
-    public function getClassification(): Classification
+    public function getAd(): Ad
     {
-        return $this->classification;
+        return $this->ad;
     }
 
     public function setCallbackUrl(string $callbackUrl): void

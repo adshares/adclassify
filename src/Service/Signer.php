@@ -2,7 +2,7 @@
 
 namespace Adshares\Adclassify\Service;
 
-use Adshares\Adclassify\Entity\Classification;
+use Adshares\Adclassify\Entity\Ad;
 
 class Signer
 {
@@ -13,9 +13,9 @@ class Signer
         $this->secretKey = $secretKey;
     }
 
-    public function signClassification(Classification $classification): string
+    public function signClassification(Ad $ad): string
     {
-        $message = $this->createDataMessage($classification->getChecksum(), $classification->getKeywords());
+        $message = $this->createDataMessage($ad->getChecksum(), $ad->getKeywords());
 
         $key_pair = sodium_crypto_sign_seed_keypair(hex2bin($this->secretKey));
         $key_secret = sodium_crypto_sign_secretkey($key_pair);

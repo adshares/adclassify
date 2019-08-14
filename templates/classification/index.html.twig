@@ -1,33 +1,118 @@
 {% extends 'regular_page.html.twig' %}
 
 {% block content %}
-    <div class="container">
+    <div class="container" id="panel">
+
         {% if campaign %}
-            {{ campaign.user.fullName }}
-            {{ campaign.landingUrl }}
-            {{ campaign.createdAt|date('Y-m-d H:m:s') }}
-            {{ campaign.updatedAt|date('Y-m-d H:m:s') }}
+            <nav class="navbar navbar-light border-bottom border-top">
+                <div class="navbar-text">
+                    {{ campaign.user.fullName }}
+                </div>
+                <div class="navbar-text">
+                    <a href="{{ campaign.landingUrl }}" target="_blank">{{ campaign.landingUrl }}</a><br/>
+                    id: <code>{{ campaign.campaignId|hex }}</code>
+                </div>
+                <div class="navbar-text small text-right">
+                    creted at: {{ campaign.createdAt|date('Y-m-d H:m:s') }}<br/>
+                    updated at: {{ campaign.updatedAt|date('Y-m-d H:m:s') }}
+                </div>
+                <div>
+                    {% if prevCampaign %}
+                        <a class="btn btn-primary btn-sm"
+                           href="{{ path('classification', {'requestId': prevCampaign.id}) }}"><i
+                                    class="fas fa-chevron-left mr-2"></i>Prev</a>
+                    {% endif %}
+                    {% if nextCampaign %}
+                        <a class="btn btn-primary btn-sm"
+                           href="{{ path('classification', {'requestId': nextCampaign.id}) }}">Next<i
+                                    class="fas fa-chevron-right ml-2"></i></a>
+                    {% endif %}
+                </div>
+            </nav>
         {% else %}
             <div class="alert alert-warning" role="alert">
                 The list of pending campaigns <b>is empty</b>.
             </div>
         {% endif %}
 
+        {% set maxWidth = 700 %}
+        {% set maxHeight = 200 %}
 
-        {% for request in requests %}
-            <div>
-                <div>
-                    {% if request.type == 'image' %}
-                        <img src="{{ request.serveUrl }}" border="0" alt=""/>
-                    {% else %}
-                        <iframe src="{{ request.serveUrl }}" sandbox="allow-scripts" width="100%" height="100%"
-                                marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true"
-                                scrolling="no" frameborder="0"></iframe>
-                    {% endif %}
-                </div>
-
+        {% if not requests %}
+            <div class="alert alert-warning mt-2" role="alert">
+                The list of requests <b>is empty</b>.
             </div>
-        {% endfor %}
-
+        {% else %}
+            <form id="panel-list" action="{{ path('classification_save') }}" method="post">
+                <input type="hidden" name="token" value="{{ csrf_token('panel') }}"/>
+                <div class="text-right mt-2 pb-2 ">
+                    <button type="submit" class="btn btn-lg btn-success">Save<i class="fas fa-check ml-2"></i></button>
+                </div>
+                <div class=" py-2 px-3 text-right" id="bulk-categories">
+                    {% for category in categories %}
+                        {% set isSafe = category.key == 'safe' %}
+                        <span class="button-checkbox">
+                            <button
+                                    type="button"
+                                    data-off-color="light"
+                                    data-on-color="{% if isSafe %}success{% else %}danger{% endif %}"
+                                    class="btn btn-sm btn-light"
+                            >{{ category.label }}</button>
+                            <input type="checkbox" class="collapse"/>
+                        </span>
+                    {% endfor %}
+                </div>
+                {% for request in requests %}
+                    <div class="row border-bottom my-2 py-2">
+                        <div class="col-8">
+                            <div class="banner-box mt-2"
+                                 style="max-height: {{ maxHeight }}px; width: {{ maxWidth }}px;">
+                                <div style="
+                                        width: {{ request.ad.width }}px;
+                                        height: {{ request.ad.height }}px;
+                                        transform:scale({{ min(maxWidth/request.ad.width, maxHeight/request.ad.height) }});
+                                        ">
+                                    {% if request.type == 'image' %}
+                                        <img src="{{ request.serveUrl }}" border="0" alt=""/>
+                                    {% else %}
+                                        <iframe srcdoc="{{ request.ad.content }}" sandbox="allow-scripts" width="100%"
+                                                height="100%"
+                                                marginwidth="0" marginheight="0" vspace="0" hspace="0"
+                                                allowtransparency="true"
+                                                scrolling="no" frameborder="0"></iframe>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            {% for category in categories %}
+                                {% set isSafe = category.key == 'safe' %}
+                                {% if isSafe %}<br/>{% endif %}
+                                <span class="button-checkbox">
+                                <button type="button"
+                                        class="btn btn-secondary mb-1"
+                                        data-on-color="{% if isSafe %}success{% else %}danger{% endif %}"
+                                        {% if category.description is defined %}
+                                            title="{{ category.description }}"
+                                        {% endif %}
+                                >{{ category.label }}</button>
+                                <input name="requests[{{ request.id }}][{{ category.key }}]" type="checkbox"
+                                       class="collapse"/>
+                            </span>
+                            {% endfor %}
+                            <div class="row small mt-2 mr-2 py-1 border rounded">
+                                <div class="col-sm-2 px-1 text-right">id:</div>
+                                <div class="col-sm-10 px-1"><code>{{ request.bannerId|hex }}</code></div>
+                                <div class="col-sm-2 px-1 text-right">chk:</div>
+                                <div class="col-sm-10 px-1"><code>{{ request.ad.checksum|hex }}</code></div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="text-right">
+                    <button type="submit" class="btn btn-lg btn-success">Save<i class="fas fa-check ml-2"></i></button>
+                </div>
+            </form>
+        {% endif %}
     </div>
 {% endblock %}

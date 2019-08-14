@@ -2,18 +2,18 @@
 
 namespace Adshares\Adclassify\Repository;
 
-use Adshares\Adclassify\Entity\Classification;
+use Adshares\Adclassify\Entity\Ad;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
-class ClassificationRepository extends ServiceEntityRepository
+class AdRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Classification::class);
+        parent::__construct($registry, Ad::class);
     }
 
-    public function findByChecksum(string $checksum): ?Classification
+    public function findByChecksum(string $checksum): ?Ad
     {
         return $this->findOneBy(['checksum' => $checksum]);
     }

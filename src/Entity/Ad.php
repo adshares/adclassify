@@ -10,9 +10,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass="Adshares\Adclassify\Repository\ClassificationRepository")
+ * @ORM\Entity(repositoryClass="AdRepository")
  * @ORM\Table(
- *     name="classification",
+ *     name="ad",
  *     uniqueConstraints={@ORM\UniqueConstraint(name="checksum_idx", columns={"checksum"})},
  *     indexes={
  *         @ORM\Index(name="created_by_idx", columns={"created_by_id"}),
@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity(fields={"checksum"}, message="There is already a classification with this checksum")
  * @Gedmo\Loggable
  */
-class Classification
+class Ad
 {
     use TimestampableEntity, BlameableEntity;
 
@@ -111,6 +111,16 @@ class Classification
     public function setSize(string $size): void
     {
         $this->size = $size;
+    }
+
+    public function getWidth(): int
+    {
+        return explode('x', $this->size)[0];
+    }
+
+    public function getHeight(): int
+    {
+        return explode('x', $this->size)[1];
     }
 
     public function isProcessed(): bool

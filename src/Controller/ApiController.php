@@ -2,9 +2,9 @@
 
 namespace Adshares\Adclassify\Controller;
 
-use Adshares\Adclassify\Entity\Classification;
+use Adshares\Adclassify\Entity\Ad;
 use Adshares\Adclassify\Entity\Request as ClassificationRequest;
-use Adshares\Adclassify\Repository\ClassificationRepository;
+use Adshares\Adclassify\Repository\AdRepository;
 use Adshares\Adclassify\Repository\RequestRepository;
 use Adshares\Adclassify\Repository\TaxonomyRepository;
 use Adshares\Adclassify\Service\Signer;
@@ -31,7 +31,7 @@ class ApiController extends AbstractController implements EventSubscriberInterfa
     private $logger;
 
     /**
-     * @var ClassificationRepository
+     * @var AdRepository
      */
     private $classificationRepository;
 
@@ -48,7 +48,7 @@ class ApiController extends AbstractController implements EventSubscriberInterfa
     private $newRequests = [];
 
     public function __construct(
-        ClassificationRepository $classificationRepository,
+        AdRepository $classificationRepository,
         RequestRepository $requestRepository,
         Signer $signer,
         LoggerInterface $logger
@@ -168,7 +168,7 @@ class ApiController extends AbstractController implements EventSubscriberInterfa
 
         $classification = $this->classificationRepository->findByChecksum(hex2bin($banner['checksum']));
         if ($classification === null) {
-            $classification = new Classification();
+            $classification = new Ad();
             $classification->setSize($banner['size']);
             $classification->setChecksum(hex2bin($banner['checksum']));
             $entityManager->persist($classification);
@@ -177,7 +177,7 @@ class ApiController extends AbstractController implements EventSubscriberInterfa
         $request = new ClassificationRequest();
         $request->setUser($this->getUser());
         $request->setBannerId(hex2bin($banner['id']));
-        $request->setClassification($classification);
+        $request->setAd($classification);
         $request->setCallbackUrl($callbackUrl);
         $request->setServeUrl($banner['serve_url']);
         $request->setType($banner['type']);
@@ -205,8 +205,8 @@ class ApiController extends AbstractController implements EventSubscriberInterfa
         foreach ($this->newRequests as $request) {
             /* @var $request ClassificationRequest */
             $request->setInfo(null);
-            if ($request->getClassification()->getContent() !== null) {
-                if ($request->getClassification()->isProcessed()) {
+            if ($request->getAd()->getContent() !== null) {
+                if ($request->getAd()->isProcessed()) {
                     $request->setStatus(ClassificationRequest::CALLBACK_SUCCESS);
                     $request->setInfo('Existing classification was used');
                 } else {
@@ -214,7 +214,7 @@ class ApiController extends AbstractController implements EventSubscriberInterfa
                 }
             } else {
                 if (($content = $this->downloadContent($request)) !== null) {
-                    $request->getClassification()->setContent($content);
+                    $request->getAd()->setContent($content);
                     $request->setStatus(ClassificationRequest::STATUS_PENDING);
                 } else {
                     $request->setStatus(ClassificationRequest::STATUS_REJECTED);
@@ -239,7 +239,7 @@ class ApiController extends AbstractController implements EventSubscriberInterfa
             $request->setInfo($exception->getMessage());
         }
 
-        if ($content !== null && !$this->signer->checkContent($content, $request->getClassification()->getChecksum())) {
+        if ($content !== null && !$this->signer->checkContent($content, $request->getAd()->getChecksum())) {
             $content = null;
             $request->setInfo('Invalid cehcksum');
         }

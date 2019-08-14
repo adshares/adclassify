@@ -74,6 +74,11 @@ class User implements UserInterface, \Serializable
         $this->apiKeys = new ArrayCollection();
     }
 
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
     public function setEmail(string $email): void
     {
         $this->email = $email;
