@@ -3,6 +3,7 @@
 namespace Adshares\Adclassify\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -11,7 +12,7 @@ class AppController extends AbstractController
 
     public function index(): Response
     {
-        return $this->render('app/index.html.twig', []);
+        return new RedirectResponse($this->generateUrl('classification'));
     }
 
     public function info(Request $request): Response
