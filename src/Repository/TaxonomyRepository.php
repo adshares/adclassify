@@ -4,6 +4,8 @@ namespace Adshares\Adclassify\Repository;
 
 class TaxonomyRepository
 {
+    const CATEGORY_SAFE = 'safe';
+
     public function getTaxonomy(): array
     {
         return [
@@ -53,7 +55,7 @@ class TaxonomyRepository
                 'label' => 'Malware',
                 'description' => 'Software download, extensions'
             ],
-            ['key' => 'safe', 'label' => 'Safe'],
+            ['key' => self::CATEGORY_SAFE, 'label' => 'Safe'],
         ];
     }
 }

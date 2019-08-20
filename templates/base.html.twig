@@ -8,6 +8,7 @@
     <title>{% block title %}{% endblock %}Adclassify</title>
     {% block stylesheets %}{% endblock %}
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    {% block meta %}{% endblock %}
 </head>
 <body id="{% block body_id %}{% endblock %}">
 {% block body %}{% endblock %}

@@ -2,6 +2,7 @@
 
 namespace Adshares\Adclassify\Controller;
 
+use Adshares\Adclassify\Entity\Request as ClassificationRequest;
 use Adshares\Adclassify\Repository\AdRepository;
 use Adshares\Adclassify\Repository\RequestRepository;
 use Adshares\Adclassify\Repository\TaxonomyRepository;
@@ -49,10 +50,10 @@ class ClassificationController extends AbstractController
             $request = $this->requestRepository->findNextPending();
         }
 
-        $campaign = [];
+        $requests = [];
         $prevCampaign = $nextCampaign = null;
 
-        if ($campaign !== null) {
+        if ($request !== null) {
             $requests = $this->requestRepository->findByCampaign($request);
             $prevCampaign = $this->requestRepository->findNextPending($request, false);
             $nextCampaign = $this->requestRepository->findNextPending($request);
@@ -66,14 +67,59 @@ class ClassificationController extends AbstractController
             'prevCampaign' => $prevCampaign,
             'nextCampaign' => $nextCampaign,
             'categories' => $categories,
+            'categorySafe' => TaxonomyRepository::CATEGORY_SAFE,
         ]);
     }
 
     public function save(Request $request): Response
     {
-        dump($request);exit;
+        $submittedToken = $request->request->get('token');
+        $classifications = $request->request->get('classifications', []);
 
-        return new RedirectResponse();
+        if (!$this->isCsrfTokenValid('panel', $submittedToken)) {
+            throw new \RuntimeException('Invalid CSRF token');
+        }
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $taxonomy = array_map(function ($category) {
+            return $category['key'];
+        }, $this->taxonomyRepository->getCatgories());
+
+        $cRequest = null;
+        foreach ($classifications as $id => $categories) {
+
+            /* @var $cRequest ClassificationRequest */
+            if (($cRequest = $this->requestRepository->find($id)) === null) {
+                throw new \RuntimeException('Invalid classification request id');
+            }
+
+            if (isset($categories[TaxonomyRepository::CATEGORY_SAFE])) {
+                $category = [TaxonomyRepository::CATEGORY_SAFE];
+            } else {
+                $category = array_values(array_intersect($taxonomy, array_keys($categories)));
+            }
+
+            $cRequest->getAd()->setKeywords(['category' => $category]);
+            $cRequest->getAd()->setProcessed(true);
+            $entityManager->persist($cRequest->getAd());
+
+            foreach ($this->requestRepository->findByAd($cRequest->getAd()) as $aRequest) {
+                /* @var $aRequest ClassificationRequest */
+                $aRequest->setStatus(ClassificationRequest::STATUS_PROCESSED);
+                $aRequest->setInfo(null);
+                $aRequest->setCallbackStatus(ClassificationRequest::CALLBACK_PENDING);
+                $aRequest->setSentAt(null);
+                $entityManager->persist($aRequest);
+            }
+        }
+
+        $entityManager->flush();
+
+        $next = $this->requestRepository->findNextPending($cRequest);
+
+        return new RedirectResponse($this->generateUrl('classification', [
+            'requestId' => $next ? $next->getId() : null
+        ]));
     }
 
     public function status(Request $request): Response

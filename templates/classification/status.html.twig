@@ -26,7 +26,7 @@
                             {% if request.isPending %}
                                 <a class="btn btn-primary btn-sm" href="{{ path('classification', {'requestId': request.id}) }}">Classify</a>
                             {% else %}
-                                <small>{{ request.ad.keywords|keywords }}</small>
+                                <a class="small" href="{{ path('classification', {'requestId': request.id}) }}" title="Edit classification">{{ request.ad.keywords|keywords }}</a>
                             {% endif %}
                         </td>
                         <td>

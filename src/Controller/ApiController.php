@@ -207,7 +207,7 @@ class ApiController extends AbstractController implements EventSubscriberInterfa
             $request->setInfo(null);
             if ($request->getAd()->getContent() !== null) {
                 if ($request->getAd()->isProcessed()) {
-                    $request->setStatus(ClassificationRequest::CALLBACK_SUCCESS);
+                    $request->setStatus(ClassificationRequest::STATUS_PROCESSED);
                     $request->setInfo('Existing classification was used');
                 } else {
                     $request->setStatus(ClassificationRequest::STATUS_PENDING);

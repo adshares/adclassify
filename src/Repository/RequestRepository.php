@@ -2,6 +2,7 @@
 
 namespace Adshares\Adclassify\Repository;
 
+use Adshares\Adclassify\Entity\Ad;
 use Adshares\Adclassify\Entity\Request;
 use Adshares\Adclassify\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -37,11 +38,21 @@ class RequestRepository extends ServiceEntityRepository
         return $this->findBy(['status' => Request::STATUS_NEW]);
     }
 
+    public function findByAd(Ad $ad): array
+    {
+        return $this->findBy(
+            [
+                'status' => [Request::STATUS_PROCESSED, Request::STATUS_NEW, Request::STATUS_PENDING],
+                'ad' => $ad,
+            ]
+        );
+    }
+
     public function findByCampaign(Request $request): array
     {
         return $this->findBy(
             [
-                'status' => [Request::STATUS_PENDING, Request::STATUS_PROCESSED],
+                'status' => [Request::STATUS_PROCESSED, Request::STATUS_PENDING],
                 'user' => $request->getUser(),
                 'campaignId' => $request->getCampaignId(),
             ],
