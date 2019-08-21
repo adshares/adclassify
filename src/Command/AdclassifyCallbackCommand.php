@@ -90,6 +90,7 @@ class AdclassifyCallbackCommand extends Command
     private function processRequests(array $requests, SymfonyStyle $io): int
     {
         $adservers = $origin = [];
+        $timestamp = time();
         foreach ($requests as $request) {
             /* @var $request ClassificationRequest */
 
@@ -104,7 +105,6 @@ class AdclassifyCallbackCommand extends Command
                         $classification->getId()
                     ));
                 }
-                $timestamp = time();
                 $data['keywords'] = $classification->getKeywords();
                 $data['signature'] = $this->signer->signClassification($classification, $timestamp);
                 $data['timestamp'] = $timestamp;

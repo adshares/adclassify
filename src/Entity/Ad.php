@@ -149,7 +149,9 @@ class Ad
     public function setRejected(bool $rejected): void
     {
         $this->rejected = $rejected;
-        $this->keywords = null;
+        if ($rejected) {
+            $this->keywords = null;
+        }
     }
 
     public function getKeywords(): ?array

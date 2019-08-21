@@ -105,22 +105,31 @@ class ClassificationController extends AbstractController
                 throw new \RuntimeException('Invalid classification request id');
             }
 
+            $ad = $cRequest->getAd();
+
             if (isset($categories[self::CATEGORY_REJECT])) {
-                $cRequest->getAd()->setRejected(true);
+                if ($ad->isRejected()) {
+                    break;
+                }
+                $ad->setRejected(true);
             } else {
-                $cRequest->getAd()->setRejected(false);
+                $ad->setRejected(false);
                 if (isset($categories[TaxonomyRepository::CATEGORY_SAFE])) {
                     $category = [TaxonomyRepository::CATEGORY_SAFE];
                 } else {
                     $category = array_values(array_intersect($taxonomy, array_keys($categories)));
                 }
-                $cRequest->getAd()->setKeywords(['category' => $category]);
+                $keywords = ['category' => $category];
+                if ($ad->getKeywords() === $keywords) {
+                    break;
+                }
+                $ad->setKeywords($keywords);
             }
 
-            $cRequest->getAd()->setProcessed(true);
-            $entityManager->persist($cRequest->getAd());
+            $ad->setProcessed(true);
+            $entityManager->persist($ad);
 
-            $requests = $this->requestRepository->findByAd($cRequest->getAd());
+            $requests = $this->requestRepository->findByAd($ad);
             $requests[] = $cRequest;
 
             foreach ($requests as $aRequest) {
