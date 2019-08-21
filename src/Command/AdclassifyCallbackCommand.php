@@ -134,8 +134,9 @@ class AdclassifyCallbackCommand extends Command
                 if (204 === $response->getStatusCode()) {
                     $success = true;
                     $sent += count($data);
+                } else {
+                    $io->warning(sprintf('Received %d status code', $response->getStatusCode()));
                 }
-                $io->warning(sprintf('Received %d status code', $response->getStatusCode()));
 
             } catch (TransportExceptionInterface $exception) {
                 $success = false;
