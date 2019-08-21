@@ -100,7 +100,6 @@ class Ad
 
     public function getChecksum(): string
     {
-
         if (gettype($this->checksum) === 'resource') {
             $this->checksum = stream_get_contents($this->checksum);
         }
