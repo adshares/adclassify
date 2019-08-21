@@ -26,6 +26,8 @@ class Ad
 {
     use TimestampableEntity, BlameableEntity;
 
+    private $streams = [];
+
     /**
      * @var int
      *
@@ -43,7 +45,7 @@ class Ad
     private $content;
 
     /**
-     * @var string|resource
+     * @var resource
      *
      * @ORM\Column(type="binary", length=20)
      * @Assert\NotBlank()
@@ -87,10 +89,10 @@ class Ad
 
     public function getContent(): ?string
     {
-        if (gettype($this->content) === 'resource') {
-            $this->content = stream_get_contents($this->content);
+        if (!isset($this->streams['content']) && gettype($this->content) === 'resource') {
+            $this->streams['content'] = stream_get_contents($this->content);
         }
-        return $this->content;
+        return $this->streams['content'];
     }
 
     public function setContent(?string $content): void
@@ -100,10 +102,10 @@ class Ad
 
     public function getChecksum(): string
     {
-        if (gettype($this->checksum) === 'resource') {
-            $this->checksum = stream_get_contents($this->checksum);
+        if (!isset($this->streams['checksum']) && gettype($this->checksum) === 'resource') {
+            $this->streams['checksum'] = stream_get_contents($this->checksum);
         }
-        return $this->checksum;
+        return $this->streams['checksum'];
     }
 
     public function setChecksum(string $checksum): void

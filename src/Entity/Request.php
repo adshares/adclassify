@@ -30,6 +30,8 @@ class Request
     const CALLBACK_PENDING = 1;
     const CALLBACK_FAILED = 2;
 
+    private $streams = [];
+
     /**
      * @var int
      *
@@ -90,7 +92,7 @@ class Request
     private $landingUrl;
 
     /**
-     * @var string
+     * @var resource
      *
      * @ORM\Column(type="binary", length=16)
      * @Assert\NotBlank()
@@ -98,7 +100,7 @@ class Request
     private $campaignId;
 
     /**
-     * @var string
+     * @var resource
      *
      * @ORM\Column(type="binary", length=16)
      * @Assert\NotBlank()
@@ -205,10 +207,10 @@ class Request
 
     public function getCampaignId(): string
     {
-        if (gettype($this->campaignId) === 'resource') {
-            $this->campaignId = stream_get_contents($this->campaignId);
+        if (!isset($this->streams['campaignId']) && gettype($this->campaignId) === 'resource') {
+            $this->streams['campaignId'] = stream_get_contents($this->campaignId);
         }
-        return $this->campaignId;
+        return $this->streams['campaignId'];
     }
 
     public function setBannerId(string $bannerId): void
@@ -218,10 +220,10 @@ class Request
 
     public function getBannerId(): string
     {
-        if (gettype($this->bannerId) === 'resource') {
-            $this->bannerId = stream_get_contents($this->bannerId);
+        if (!isset($this->streams['bannerId']) && gettype($this->bannerId) === 'resource') {
+            $this->streams['bannerId'] = stream_get_contents($this->bannerId);
         }
-        return $this->bannerId;
+        return $this->streams['bannerId'];
     }
 
     public function setStatus(int $status): void
