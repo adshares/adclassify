@@ -93,20 +93,19 @@ class AdclassifyCallbackCommand extends Command
         $timestamp = time();
         foreach ($requests as $request) {
             /* @var $request ClassificationRequest */
-
             $id = bin2hex($request->getBannerId());
             $data = ['id' => $id];
             if ($request->getStatus() === ClassificationRequest::STATUS_PROCESSED) {
-                $classification = clone $request->getAd();
-                if (!$classification->isProcessed()) {
+                $ad = clone $request->getAd();
+                if (!$ad->isProcessed()) {
                     throw new \RuntimeException(sprintf(
                         'Classification %s [#%d] is not processed',
-                        bin2hex($classification->getChecksum()),
-                        $classification->getId()
+                        bin2hex($ad->getChecksum()),
+                        $ad->getId()
                     ));
                 }
-                $data['keywords'] = $classification->getKeywords();
-                $data['signature'] = $this->signer->signClassification($classification, $timestamp);
+                $data['keywords'] = $ad->getKeywords();
+                $data['signature'] = $this->signer->signClassification($ad, $timestamp);
                 $data['timestamp'] = $timestamp;
             } else {
                 $data['error'] = [
@@ -136,6 +135,7 @@ class AdclassifyCallbackCommand extends Command
                     $success = true;
                     $sent += count($data);
                 }
+                $io->warning(sprintf('Received %d status code', $response->getStatusCode()));
 
             } catch (TransportExceptionInterface $exception) {
                 $success = false;

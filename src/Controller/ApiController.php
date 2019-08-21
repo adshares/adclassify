@@ -204,6 +204,9 @@ class ApiController extends AbstractController implements EventSubscriberInterfa
         $entityManager = $this->getDoctrine()->getManager();
         foreach ($this->newRequests as $request) {
             /* @var $request ClassificationRequest */
+
+
+
             $request->setInfo(null);
             if ($request->getAd()->getContent() !== null) {
                 if ($request->getAd()->isProcessed()) {
