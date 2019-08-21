@@ -104,8 +104,10 @@ class AdclassifyCallbackCommand extends Command
                         $classification->getId()
                     ));
                 }
+                $timestamp = time();
                 $data['keywords'] = $classification->getKeywords();
-                $data['signature'] = $this->signer->signClassification($classification);
+                $data['signature'] = $this->signer->signClassification($classification, $timestamp = time());
+                $data['timestamp'] = $timestamp;
             } else {
                 $data['error'] = [
                     'code' => $request->getStatus(),

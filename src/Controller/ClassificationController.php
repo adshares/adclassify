@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ClassificationController extends AbstractController
 {
+    const CATEGORY_REJECT = 'reject';
 
     /**
      * @var AdRepository
@@ -54,12 +55,22 @@ class ClassificationController extends AbstractController
         $prevCampaign = $nextCampaign = null;
 
         if ($request !== null) {
-            $requests = $this->requestRepository->findByCampaign($request);
+            if ($request->getStatus() === ClassificationRequest::STATUS_REJECTED) {
+                $requests = [$request];
+            } else {
+                $requests = $this->requestRepository->findByCampaign($request);
+            }
             $prevCampaign = $this->requestRepository->findNextPending($request, false);
             $nextCampaign = $this->requestRepository->findNextPending($request);
         }
 
         $categories = $this->taxonomyRepository->getCatgories();
+        $categorySafe = array_pop($categories);
+        $categoryReject = [
+            'key' => self::CATEGORY_REJECT,
+            'label' => 'Reject',
+            'description' => 'Invalid, below standards'
+        ];
 
         return $this->render('classification/index.html.twig', [
             'requests' => $requests,
@@ -67,7 +78,8 @@ class ClassificationController extends AbstractController
             'prevCampaign' => $prevCampaign,
             'nextCampaign' => $nextCampaign,
             'categories' => $categories,
-            'categorySafe' => TaxonomyRepository::CATEGORY_SAFE,
+            'categorySafe' => $categorySafe,
+            'categoryReject' => $categoryReject,
         ]);
     }
 
@@ -93,22 +105,33 @@ class ClassificationController extends AbstractController
                 throw new \RuntimeException('Invalid classification request id');
             }
 
-            if (isset($categories[TaxonomyRepository::CATEGORY_SAFE])) {
-                $category = [TaxonomyRepository::CATEGORY_SAFE];
+            if (isset($categories[self::CATEGORY_REJECT])) {
+                $cRequest->getAd()->setRejected(true);
             } else {
-                $category = array_values(array_intersect($taxonomy, array_keys($categories)));
+                $cRequest->getAd()->setRejected(false);
+                if (isset($categories[TaxonomyRepository::CATEGORY_SAFE])) {
+                    $category = [TaxonomyRepository::CATEGORY_SAFE];
+                } else {
+                    $category = array_values(array_intersect($taxonomy, array_keys($categories)));
+                }
+                $cRequest->getAd()->setKeywords(['category' => $category]);
             }
 
-            $cRequest->getAd()->setKeywords(['category' => $category]);
             $cRequest->getAd()->setProcessed(true);
             $entityManager->persist($cRequest->getAd());
 
-            foreach ($this->requestRepository->findByAd($cRequest->getAd()) as $aRequest) {
+            $requests = $this->requestRepository->findByAd($cRequest->getAd());
+            $requests[] = $cRequest;
+
+            foreach ($requests as $aRequest) {
                 /* @var $aRequest ClassificationRequest */
-                $aRequest->setStatus(ClassificationRequest::STATUS_PROCESSED);
-                $aRequest->setInfo(null);
-                $aRequest->setCallbackStatus(ClassificationRequest::CALLBACK_PENDING);
-                $aRequest->setSentAt(null);
+                if ($cRequest->getAd()->isRejected()) {
+                    $aRequest->setStatus(ClassificationRequest::STATUS_REJECTED);
+                    $aRequest->setInfo('Rejected by classifier');
+                } else {
+                    $aRequest->setStatus(ClassificationRequest::STATUS_PROCESSED);
+                    $aRequest->setInfo(null);
+                }
                 $entityManager->persist($aRequest);
             }
         }

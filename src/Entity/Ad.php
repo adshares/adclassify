@@ -66,6 +66,14 @@ class Ad
     private $processed = false;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default": false})
+     * @Assert\NotBlank()
+     */
+    private $rejected = false;
+
+    /**
      * @var array
      *
      * @ORM\Column(type="json", nullable=true)
@@ -131,6 +139,17 @@ class Ad
     public function setProcessed(bool $processed): void
     {
         $this->processed = $processed;
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->rejected;
+    }
+
+    public function setRejected(bool $rejected): void
+    {
+        $this->rejected = $rejected;
+        $this->keywords = null;
     }
 
     public function getKeywords(): ?array

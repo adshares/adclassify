@@ -28,47 +28,56 @@ class ClassifyExtension extends AbstractExtension
         return ($add0x ? '0x' : '') . $hex;
     }
 
-    public static function formatRequestStatus(int $status)
+    public static function formatRequestStatus(Request $request, bool $extraData = false, bool $short = false)
     {
-        switch ($status) {
-            case Request::STATUS_PROCESSED:
-                return 'Processed';
-            case Request::STATUS_NEW:
-                return 'New';
-            case Request::STATUS_PENDING:
-                return 'Pending';
-            case Request::STATUS_REJECTED:
-                return 'Rejected';
-            case Request::STATUS_CANCELED:
-                return 'Canceled';
-            default:
-                return 'Unknown';
+
+        $labels = [
+            Request::STATUS_PROCESSED => ['Processed', '✓'],
+            Request::STATUS_NEW => ['New', '⋯'],
+            Request::STATUS_PENDING => ['Pending', '⋯'],
+            Request::STATUS_REJECTED => ['Rejected', '⨉'],
+            Request::STATUS_CANCELED => ['Canceled', '⨉'],
+        ];
+
+        $label = $short ? '?' : 'Unknown';
+        if (array_key_exists($request->getStatus(), $labels)) {
+            $label = $labels[$request->getStatus()][(int)$short];
         }
+
+        if ($extraData && $request->getInfo()) {
+            $label .= ' | ' . $request->getInfo();
+        }
+
+        return $label;
     }
 
-    public static function formatCallbackStatus(?int $status)
+    public static function formatCallbackStatus(Request $request, bool $extraData = false, bool $short = false)
     {
-        if ($status === null) {
-            return 'N/A';
+        $labels = [
+            Request::CALLBACK_SUCCESS => ['Success', '✓'],
+            Request::CALLBACK_PENDING => ['Pending', '⋯'],
+            Request::CALLBACK_FAILED => ['Failed', '⨉'],
+        ];
+
+        $label = $short ? '?' : 'Unknown';
+        if ($request->getCallbackStatus() === null) {
+            $label = $short ? '' : 'N/A';
+        } elseif (array_key_exists($request->getCallbackStatus(), $labels)) {
+            $label = $labels[$request->getCallbackStatus()][(int)$short];
         }
 
-        switch ($status) {
-            case Request::CALLBACK_SUCCESS:
-                return 'Success';
-            case Request::CALLBACK_PENDING:
-                return 'Pending';
-            case Request::CALLBACK_FAILED:
-                return 'Failed';
-            default:
-                return 'Unknown';
+        if ($extraData && $request->getSentAt()) {
+            $label .= ' | ' . $request->getSentAt()->format('Y-m-d H:m:s');
         }
+
+        return $label;
     }
 
-    public static function formatKeywords(array $keywords)
+    public static function formatKeywords(?array $keywords)
     {
         $dicts = [];
-        foreach ($keywords as $name => $dict) {
-            $dicts[] =  $name . ': ' .  implode(', ', $dict);
+        foreach ((array)$keywords as $name => $dict) {
+            $dicts[] = $name . ': ' . implode(', ', $dict);
         }
 
         return empty($dicts) ? '-' : implode(' | ', $dicts);

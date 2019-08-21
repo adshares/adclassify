@@ -13,9 +13,9 @@ class Signer
         $this->secretKey = $secretKey;
     }
 
-    public function signClassification(Ad $ad): string
+    public function signClassification(Ad $ad, int $timestamp): string
     {
-        $message = $this->createDataMessage($ad->getChecksum(), $ad->getKeywords());
+        $message = $this->createDataMessage($ad->getChecksum(), $timestamp, $ad->getKeywords());
 
         $key_pair = sodium_crypto_sign_seed_keypair(hex2bin($this->secretKey));
         $key_secret = sodium_crypto_sign_secretkey($key_pair);
@@ -28,12 +28,12 @@ class Signer
         return sha1($content, true) === $checksum;
     }
 
-    private function createDataMessage(string $checksum, array $data): string
+    private function createDataMessage(string $checksum, int $timestamp, array $data): string
     {
         $array = $data;
         self::sort($array);
 
-        return hash('sha256', $checksum . json_encode($array));
+        return hash('sha256', $checksum . $timestamp . json_encode($array));
     }
 
     private static function sort(array &$array): void

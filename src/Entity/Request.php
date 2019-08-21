@@ -227,6 +227,10 @@ class Request
     public function setStatus(int $status): void
     {
         $this->status = $status;
+        if (in_array($status, [self::STATUS_PROCESSED, self::STATUS_REJECTED])) {
+            $this->callbackStatus  = self::CALLBACK_PENDING;
+            $this->sentAt = null;
+        }
     }
 
     public function getStatus(): int

@@ -31,11 +31,11 @@
                         </td>
                         <td>
                             <span class="badge badge-rs{{ request.status }}"
-                                  title="{{ request.info }}">{{ request.status|requestStatus }}</span>
+                                  title="{{ request|requestStatus(true) }}">{{ request|requestStatus }}</span>
                         </td>
                         <td>
                             <span class="badge badge-rcs{{ request.callbackStatus }}"
-                                  title="{{ request.sentAt|date('Y-m-d H:m:s') }}">{{ request.callbackStatus|callbackStatus }}</span>
+                                  title="{{ request|callbackStatus(true) }}">{{ request|callbackStatus }}</span>
                         </td>
                     </tr>
                 {% endfor %}

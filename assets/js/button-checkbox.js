@@ -46,10 +46,10 @@ import jQuery from 'jquery'
       if (isChecked) {
         $button
           .removeClass('btn-' + offColor)
-          .addClass('btn-' + onColor + ' active')
+          .addClass('btn-' + onColor + ' checked')
       } else {
         $button
-          .removeClass('btn-' + onColor + ' active')
+          .removeClass('btn-' + onColor + ' checked')
           .addClass('btn-' + offColor)
       }
     }

@@ -55,7 +55,11 @@ class TaxonomyRepository
                 'label' => 'Malware',
                 'description' => 'Software download, extensions'
             ],
-            ['key' => self::CATEGORY_SAFE, 'label' => 'Safe'],
+            [
+                'key' => self::CATEGORY_SAFE,
+                'label' => 'Mainstream',
+                'description' => 'Safe content'
+            ],
         ];
     }
 }

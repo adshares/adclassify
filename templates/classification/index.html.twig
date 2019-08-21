@@ -1,7 +1,8 @@
 {% extends 'regular_page.html.twig' %}
 
 {% block meta %}
-    <meta http-equiv="Content-Security-Policy" content="frame-src blob: data: 'self' 'unsafe-inline'; child-src blob: data: 'self' 'unsafe-inline'">
+    <meta http-equiv="Content-Security-Policy"
+          content="frame-src blob: data: 'self' 'unsafe-inline'; child-src blob: data: 'self' 'unsafe-inline'">
 {% endblock %}
 
 {% block content %}
@@ -54,23 +55,40 @@
                 <div class="text-right mt-2 pb-2 ">
                     <button type="submit" class="btn btn-lg btn-success">Save<i class="fas fa-check ml-2"></i></button>
                 </div>
-                <div class=" py-2 px-3 text-right" id="bulk-categories">
+                <div class="py-2 px-3 text-right categories" id="bulk-categories">
+                    <span class="button-checkbox category category-safe mr-2">
+                        <button
+                                type="button"
+                                data-off-color="light"
+                                data-on-color="success"
+                                class="btn btn-sm btn-light"
+                        ><i class="fas fa-check mr-2"></i> {{ categorySafe.label }}</button>
+                        <input data-key="{{ categorySafe.key }}" type="checkbox" class="collapse"/>
+                    </span>
+                    <span class="button-checkbox category category-reject mr-4">
+                        <button
+                                type="button"
+                                data-off-color="light"
+                                data-on-color="danger"
+                                class="btn btn-sm btn-light"
+                        ><i class="fas fa-times mr-2"></i> {{ categoryReject.label }}</button>
+                        <input data-key="{{ categoryReject.key }}" type="checkbox" class="collapse"/>
+                    </span>
                     {% for category in categories %}
-                        {% set isSafe = category.key == categorySafe %}
-                        <span class="button-checkbox">
+                        <span class="button-checkbox category">
                             <button
                                     type="button"
                                     data-off-color="light"
-                                    data-on-color="{% if isSafe %}success{% else %}danger{% endif %}"
+                                    data-on-color="warning"
                                     class="btn btn-sm btn-light"
                             >{{ category.label }}</button>
-                            <input type="checkbox" class="collapse"/>
+                            <input data-key="{{ category.key }}" type="checkbox" class="collapse"/>
                         </span>
                     {% endfor %}
                 </div>
                 {% for request in requests %}
                     {% set scale = min(1.0, maxWidth/request.ad.width, maxHeight/request.ad.height) %}
-                    <div class="row border-bottom my-2 py-2">
+                    <div class="row border-bottom my-2 py-2 request">
                         <div class="col-8">
                             <div class="banner-box mt-2"
                                  style="max-height: {{ maxHeight }}px; width: {{ maxWidth }}px;">
@@ -91,24 +109,54 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-4 categories">
+                            <div class="small mr-2 mb-1 text-right">
+                                <span class="badge badge-rs{{ request.status }}"
+                                      title="{{ request|requestStatus(true) }}">{{ request|requestStatus(false, true) }}</span>
+                                <span class="badge badge-rcs{{ request.callbackStatus }}"
+                                      title="{{ request|callbackStatus(true) }}">{{ request|callbackStatus(false, true) }}</span>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    {% set isChecked = categorySafe.key in request.ad.keywords.category|default([]) %}
+                                    <span class="button-checkbox category category-safe">
+                                        <button type="button"
+                                                class="btn btn-secondary mb-1"
+                                                data-on-color="success"
+                                                title="{{ categorySafe.description }}"
+                                        ><i class="fas fa-check mr-2"></i> {{ categorySafe.label }}</button>
+                                        <input name="classifications[{{ request.id }}][{{ categorySafe.key }}]"
+                                               type="checkbox" {% if isChecked %}checked{% endif %} class="collapse"/>
+                                    </span>
+                                </div>
+                                <div class="col-6 text-right">
+                                    {% set isChecked = request.ad.rejected %}
+                                    <span class="button-checkbox category category-reject">
+                                        <button type="button"
+                                                class="btn btn-secondary mb-1"
+                                                data-on-color="danger"
+                                                title="{{ categoryReject.description }}"
+                                        ><i class="fas fa-times mr-2"></i> {{ categoryReject.label }}</button>
+                                        <input name="classifications[{{ request.id }}][{{ categoryReject.key }}]"
+                                               type="checkbox" {% if isChecked %}checked{% endif %} class="collapse"/>
+                                    </span>
+                                </div>
+                            </div>
                             {% for category in categories %}
-                                {% set isSafe = category.key == categorySafe %}
                                 {% set isChecked = category.key in request.ad.keywords.category|default([]) %}
-                                {% if isSafe %}<br/>{% endif %}
-                                <span class="button-checkbox">
-                                <button type="button"
-                                        class="btn btn-secondary mb-1"
-                                        data-on-color="{% if isSafe %}success{% else %}danger{% endif %}"
-                                        {% if category.description is defined %}
-                                            title="{{ category.description }}"
-                                        {% endif %}
-                                >{{ category.label }}</button>
-                                <input name="classifications[{{ request.id }}][{{ category.key }}]" type="checkbox"
-                                       {% if isChecked %}checked{% endif %} class="collapse"/>
-                            </span>
+                                <span class="button-checkbox category category-{{ category.key }}">
+                                    <button type="button"
+                                            class="btn btn-secondary mb-1"
+                                            data-on-color="warning"
+                                            {% if category.description is defined %}
+                                                title="{{ category.description }}"
+                                            {% endif %}
+                                    >{{ category.label }}</button>
+                                    <input name="classifications[{{ request.id }}][{{ category.key }}]" type="checkbox"
+                                           {% if isChecked %}checked{% endif %} class="collapse"/>
+                                </span>
                             {% endfor %}
-                            <div class="row small mt-2 mr-2 py-1 border rounded">
+                            <div class="row small mt-2 py-1 border rounded">
                                 <div class="col-sm-2 px-1 text-right">id:</div>
                                 <div class="col-sm-10 px-1"><code>{{ request.bannerId|hex }}</code></div>
                                 <div class="col-sm-2 px-1 text-right">chk:</div>
