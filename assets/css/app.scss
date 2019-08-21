@@ -22,11 +22,11 @@ $font-family-sans-serif: Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Ro
     @extend .badge-primary
 }
 
-.badge-rs3 {
+.badge-rs3, .badge-rs4 {
     @extend .badge-danger
 }
 
-.badge-rs4 {
+.badge-rs5 {
     @extend .badge-warning
 }
 

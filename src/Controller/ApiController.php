@@ -225,7 +225,7 @@ class ApiController extends AbstractController implements EventSubscriberInterfa
                     $request->getAd()->setContent($content);
                     $request->setStatus(ClassificationRequest::STATUS_PENDING);
                 } else {
-                    $request->setStatus(ClassificationRequest::STATUS_REJECTED);
+                    $request->setStatus(ClassificationRequest::STATUS_FAILED);
                 }
             }
             $entityManager->persist($request);

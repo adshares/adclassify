@@ -35,6 +35,7 @@ class ClassifyExtension extends AbstractExtension
             Request::STATUS_PROCESSED => ['Processed', '✓'],
             Request::STATUS_NEW => ['New', '⋯'],
             Request::STATUS_PENDING => ['Pending', '⋯'],
+            Request::STATUS_FAILED => ['Failed', '⨉'],
             Request::STATUS_REJECTED => ['Rejected', '⨉'],
             Request::STATUS_CANCELED => ['Canceled', '⨉'],
         ];

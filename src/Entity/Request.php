@@ -23,8 +23,9 @@ class Request
     const STATUS_PROCESSED = 0;
     const STATUS_NEW = 1;
     const STATUS_PENDING = 2;
-    const STATUS_REJECTED = 3;
-    const STATUS_CANCELED = 4;
+    const STATUS_FAILED = 3;
+    const STATUS_REJECTED = 4;
+    const STATUS_CANCELED = 5;
 
     const CALLBACK_SUCCESS = 0;
     const CALLBACK_PENDING = 1;
@@ -231,7 +232,7 @@ class Request
     public function setStatus(int $status): void
     {
         $this->status = $status;
-        if (in_array($status, [self::STATUS_PROCESSED, self::STATUS_REJECTED])) {
+        if (in_array($status, [self::STATUS_PROCESSED, self::STATUS_FAILED, self::STATUS_REJECTED])) {
             $this->callbackStatus  = self::CALLBACK_PENDING;
             $this->sentAt = null;
         }
@@ -250,6 +251,11 @@ class Request
     public function isProcessed(): bool
     {
         return $this->status == self::STATUS_PROCESSED;
+    }
+
+    public function isFailed(): bool
+    {
+        return $this->status == self::STATUS_FAILED;
     }
 
     public function isRejected(): bool
