@@ -92,12 +92,13 @@ class Ad
         if (!isset($this->streams['content']) && gettype($this->content) === 'resource') {
             $this->streams['content'] = stream_get_contents($this->content);
         }
-        return $this->streams['content'];
+        return $this->streams['content'] ?? $this->content;
     }
 
     public function setContent(?string $content): void
     {
         $this->content = $content;
+        $this->streams['content'] = $content;
     }
 
     public function getChecksum(): string
@@ -105,12 +106,13 @@ class Ad
         if (!isset($this->streams['checksum']) && gettype($this->checksum) === 'resource') {
             $this->streams['checksum'] = stream_get_contents($this->checksum);
         }
-        return $this->streams['checksum'];
+        return $this->streams['checksum'] ?? $this->checksum;
     }
 
     public function setChecksum(string $checksum): void
     {
         $this->checksum = $checksum;
+        $this->streams['checksum'] = $checksum;
     }
 
     public function getSize(): string

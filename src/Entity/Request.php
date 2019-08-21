@@ -203,6 +203,7 @@ class Request
     public function setCampaignId(string $campaignId): void
     {
         $this->campaignId = $campaignId;
+        $this->streams['campaignId'] = $campaignId;
     }
 
     public function getCampaignId(): string
@@ -210,12 +211,13 @@ class Request
         if (!isset($this->streams['campaignId']) && gettype($this->campaignId) === 'resource') {
             $this->streams['campaignId'] = stream_get_contents($this->campaignId);
         }
-        return $this->streams['campaignId'];
+        return $this->streams['campaignId'] ?? $this->campaignId;
     }
 
     public function setBannerId(string $bannerId): void
     {
         $this->bannerId = $bannerId;
+        $this->streams['bannerId'] = $bannerId;
     }
 
     public function getBannerId(): string
@@ -223,7 +225,7 @@ class Request
         if (!isset($this->streams['bannerId']) && gettype($this->bannerId) === 'resource') {
             $this->streams['bannerId'] = stream_get_contents($this->bannerId);
         }
-        return $this->streams['bannerId'];
+        return $this->streams['bannerId'] ?? $this->bannerId;
     }
 
     public function setStatus(int $status): void
