@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2019-08-22
 ### Added
 - Classification
+- Changelog, Readme, License
 - Project structure
 
 [Unreleased]: https://github.com/adshares/adclassify/compare/v0.1.0...HEAD
