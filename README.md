@@ -1,62 +1,92 @@
-# adClassify
+<p align="center">
+    <a href="https://adshares.net/" title="Adshares sp. z o.o." target="_blank">
+        <img src="https://adshares.net/logos/ads.svg" alt="Adshares" width="100" height="100">
+    </a>
+</p>
+<h3 align="center"><small>Adshares / AdClassify</small></h3>
+<p align="center">
+    <a href="https://github.com/adshares/adclassify/issues/new?template=bug_report.md&labels=Bug">Report bug</a>
+    ·
+    <a href="https://github.com/adshares/adclassify/issues/new?template=feature_request.md&labels=New%20Feature">Request feature</a>
+    ·
+    <a href="https://github.com/adshares/adclassify/wiki">Wiki</a>
+</p>
 
-Implementation of adClassify service in Adshares Network
 
-adClassify provides data about banners and allow Publishers to effectively filter unwanted content
+AdClassify provides data about banners and allow Publishers to effectively filter unwanted content.
+It accepts requests from [AdServer](https://github.com/adshares/adserver).
 
-# API
-### Submit banner to classify
-`POST /submit/`
-* body: json with banner details
+## Quick Start
 
-Return request id which can be used to query about the classification results. If request could be instantly processed classification is immediately returned.
-```
-[
-    'request_id' => 'abcdef',
-    'processed' => true,
-    'result' => [
-      'keywords' => [
-          'category' => 0,
-          'safe' => true,
-      ],
-      'banner' => [
-        'hash' => ''abcdef...'
-      ],
-      'signature' => 'abcdef...'
-    ]
-]
-```
-
-### Get classification
-`GET /get_data/{requestId}`
-* requestId - request id 
-
-Return classification of provided banner. If classification is complete `processed` is true. If not, one need to query it again later.
-```
-[
-    'request_id' => 'abcdef',
-    'processed' => true,
-    'result' => [
-      'keywords' => [
-          'category' => 0,
-          'safe' => true,
-      ],
-      'banner' => [
-        'hash' => ''abcdef...'
-      ],
-      'signature' => 'abcdef...'
-    ]
-]
-```
-
-### Get info
-`GET /info`
-Return info about adClassify service 
+### Development
 
 ```
-[
-  'submit_url' => 'https://example.com/submit',
-  'data_url' => 'https://example.com/get_data/:id'
-  'public_key' => 'abcdef...',
-  'schema' => []
-]
+git clone https://github.com/adshares/adclassify.git
+cd adclassify
+composer install
+composer dump-env dev
+vi .env.local.php
+php bin/console doctrine:schema:create
+or
+php bin/console doctrine:schema:update
+or
+php bin/console doctrine:migration:migrate
+yarn
+yarn encore dev
+php bin/console server:run
+```
+
+### Production
+
+```
+git clone https://github.com/adshares/adclassify.git
+cd adclassify
+composer install --no-dev --no-scripts --optimize-autoloader
+composer dump-env prod
+vi .env.local.php
+php bin/console doctrine:schema:create
+php bin/console doctrine:migration:migrate
+or
+php bin/console doctrine:schema:update
+yarn
+yarn encore production
+```
+
+Nginx configuration:
+https://symfony.com/doc/current/setup/web_server_configuration.html#web-server-nginx
+
+## Contributing
+
+Please follow our [Contributing Guidelines](docs/CONTRIBUTING.md)
+
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning.
+For the versions available, see the [tags on this repository](https://github.com/adshares/license-server/tags).
+
+## Authors
+
+* **[Maciej Pilarczyk](https://github.com/m-pilarczyk)** - _The programmer_
+
+See also the list of [contributors](https://github.com/adshares/license-server/contributors) who participated in this project.
+
+
+## License
+
+This work is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This work is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+[GNU General Public License](LICENSE) for more details.
+
+You should have received a copy of the License along with this work.
+If not, see <https://www.gnu.org/licenses/gpl.html>.
+
+
+## More Info
+
+- [AdServer](https://github.com/adshares/adserver) - the core logic behind it all
