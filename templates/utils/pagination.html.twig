@@ -1,5 +1,6 @@
 {% spaceless %}
     {% set nearbyPagesLimit = 3 %}
+    {% set totalPages = max(1, totalPages) %}
     <nav>
         <ul class="pagination justify-content-end">
             <li class="page-item{% if currentPage == 1 %} disabled{% endif %}">
