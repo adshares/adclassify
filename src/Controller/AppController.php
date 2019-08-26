@@ -22,7 +22,8 @@ class AppController extends AbstractController
             'module' => 'adclassify',
             'name' => $_ENV['APP_NAME'],
             'version' => $_ENV['APP_VERSION'],
-            'account' => $_ENV['CLASSIFIER_ADS_ACCOUNT'],
+            'adsAddress' => $_ENV['CLASSIFIER_ADS_ACCOUNT'],
+            'publicKey' => $_ENV['CLASSIFIER_PUBLIC_KEY'],
         ];
 
         return new Response(
