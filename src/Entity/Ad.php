@@ -2,8 +2,6 @@
 
 namespace Adshares\Adclassify\Entity;
 
-use Adshares\Adclassify\Entity\Traits\BlameableEntity;
-use Adshares\Adclassify\Entity\Traits\TimestampableEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -16,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     uniqueConstraints={@ORM\UniqueConstraint(name="checksum_idx", columns={"checksum"})},
  *     indexes={
  *         @ORM\Index(name="created_by_idx", columns={"created_by_id"}),
- *         @ORM\Index(name="updated_by_idx", columns={"updated_by_id"})
+ *         @ORM\Index(name="processed_by_idx", columns={"processed_by_id"})
  *     }
  * )
  * @UniqueEntity(fields={"checksum"}, message="There is already a classification with this checksum")
@@ -24,8 +22,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Ad
 {
-    use TimestampableEntity, BlameableEntity;
-
     private $streams = [];
 
     /**
@@ -36,6 +32,21 @@ class Ad
      * @ORM\Column(type="integer")
      */
     private $id;
+
+    /**
+     * @var \DateTime
+     * @Gedmo\Timestampable(on="create")
+     * @ORM\Column(type="datetime")
+     */
+    protected $createdAt;
+
+    /**
+     * @var User
+     * @Gedmo\Blameable(on="create")
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    protected $createdBy;
 
     /**
      * @var string|resource
@@ -68,6 +79,20 @@ class Ad
     private $processed = false;
 
     /**
+     * @var \DateTime
+     * @Gedmo\Timestampable(on="change", field="processed", value=true)
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $processedAt;
+
+    /**
+     * @var User
+     * @Gedmo\Blameable(on="change", field="processed", value=true)
+     * @ORM\ManyToOne(targetEntity="User")
+     */
+    protected $processedBy;
+
+    /**
      * @var bool
      *
      * @ORM\Column(type="boolean", options={"default": false})
@@ -85,6 +110,26 @@ class Ad
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function setCreatedAt(\DateTime $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    public function getCreatedAt(): \DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedBy(User $createdBy): void
+    {
+        $this->createdBy = $createdBy;
+    }
+
+    public function getCreatedBy(): User
+    {
+        return $this->createdBy;
     }
 
     public function getContent(): ?string
@@ -143,6 +188,26 @@ class Ad
     public function setProcessed(bool $processed): void
     {
         $this->processed = $processed;
+    }
+
+    public function setProcessedAt(\DateTime $processedAt): void
+    {
+        $this->processedAt = $processedAt;
+    }
+
+    public function getProcessedAt(): \DateTime
+    {
+        return $this->processedAt;
+    }
+
+    public function setProcessedBy(User $processedBy): void
+    {
+        $this->processedBy = $processedBy;
+    }
+
+    public function getProcessedBy(): User
+    {
+        return $this->processedBy;
     }
 
     public function isRejected(): bool
