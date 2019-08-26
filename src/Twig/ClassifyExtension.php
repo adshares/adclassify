@@ -2,6 +2,7 @@
 
 namespace Adshares\Adclassify\Twig;
 
+use Adshares\Adclassify\Entity\Ad;
 use Adshares\Adclassify\Entity\Request;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
@@ -15,6 +16,7 @@ class ClassifyExtension extends AbstractExtension
             new TwigFilter('requestStatus', [$this, 'formatRequestStatus']),
             new TwigFilter('callbackStatus', [$this, 'formatCallbackStatus']),
             new TwigFilter('keywords', [$this, 'formatKeywords']),
+            new TwigFilter('image64', [$this, 'formatImage64']),
         ];
     }
 
@@ -82,5 +84,16 @@ class ClassifyExtension extends AbstractExtension
         }
 
         return empty($dicts) ? '-' : implode(' | ', $dicts);
+    }
+
+    public function formatImage64($raw, $inline = true)
+    {
+        if ($raw instanceof Request) {
+            $raw = $raw->getAd()->getContent();
+        } else if ($raw instanceof Ad) {
+            $raw = $raw->getContent();
+        }
+
+        return $inline ? sprintf('data:image;base64,%s', base64_encode($raw)) : base64_encode($raw);
     }
 }

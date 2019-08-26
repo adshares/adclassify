@@ -20,8 +20,10 @@ class AppController extends AbstractController
         srand(crc32($request->getClientIp() . date('-d-m-Y-h')));
         $info = [
             'module' => 'adclassify',
-            'name' => getenv('APP_NAME'),
-            'version' => getenv('APP_VERSION'),
+            'name' => $_ENV['APP_NAME'],
+            'version' => $_ENV['APP_VERSION'],
+            'adsAddress' => $_ENV['CLASSIFIER_ADS_ACCOUNT'],
+            'publicKey' => $_ENV['CLASSIFIER_PUBLIC_KEY'],
         ];
 
         return new Response(

@@ -98,7 +98,7 @@
                                         transform:scale({{ scale }});
                                         ">
                                     {% if request.type == 'image' %}
-                                        <img src="{{ request.serveUrl }}" border="0" alt=""/>
+                                        <img src="{{ request|image64(true) }}" border="0" alt=""/>
                                     {% else %}
                                         <iframe srcdoc="{{ request.ad.content }}" sandbox="allow-scripts" width="100%"
                                                 height="100%"
