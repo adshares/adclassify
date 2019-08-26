@@ -33,11 +33,6 @@ class RequestRepository extends ServiceEntityRepository
         return new Paginator($query, $fetchJoinCollection = false);
     }
 
-    public function findNews(): array
-    {
-        return $this->findBy(['status' => Request::STATUS_NEW]);
-    }
-
     public function findByAd(Ad $ad): array
     {
         return $this->findBy(
@@ -85,6 +80,18 @@ class RequestRepository extends ServiceEntityRepository
             'bannerId' => $bannerId,
             'status' => [Request::STATUS_NEW, Request::STATUS_PENDING],
         ]);
+    }
+
+    public function findReadyToProcess(int $limit = null, bool $includeFailed = false): array
+    {
+        $status = [Request::STATUS_NEW];
+        if ($includeFailed) {
+            $status[] = Request::STATUS_FAILED;
+        }
+
+        return $this->findBy([
+            'status' => $status,
+        ], null, $limit);
     }
 
     public function findReadyToCallback(int $limit = null): array

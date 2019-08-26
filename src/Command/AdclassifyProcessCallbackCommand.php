@@ -15,9 +15,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-class AdclassifyCallbackCommand extends Command
+class AdclassifyProcessCallbackCommand extends Command
 {
-    protected static $defaultName = 'app:callback';
+    protected static $defaultName = 'app:process:callback';
 
     /**
      * @var RequestRepository
