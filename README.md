@@ -3,7 +3,7 @@
         <img src="https://adshares.net/logos/ads.svg" alt="Adshares" width="100" height="100">
     </a>
 </p>
-<h3 align="center"><small>Adshares / AdClassify</small></h3>
+<h3 align="center"><small>Adshares / Adclassify</small></h3>
 <p align="center">
     <a href="https://github.com/adshares/adclassify/issues/new?template=bug_report.md&labels=Bug">Report bug</a>
     ·
@@ -13,7 +13,7 @@
 </p>
 
 
-AdClassify provides data about banners and allow Publishers to effectively filter unwanted content.
+Adclassify provides data about banners and allow Publishers to effectively filter unwanted content.
 It accepts requests from [AdServer](https://github.com/adshares/adserver).
 
 ## Quick Start
@@ -62,13 +62,13 @@ Please follow our [Contributing Guidelines](docs/CONTRIBUTING.md)
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning.
-For the versions available, see the [tags on this repository](https://github.com/adshares/license-server/tags).
+For the versions available, see the [tags on this repository](https://github.com/adshares/adclassify/tags).
 
 ## Authors
 
 * **[Maciej Pilarczyk](https://github.com/m-pilarczyk)** - _The programmer_
 
-See also the list of [contributors](https://github.com/adshares/license-server/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/adshares/adclassify/contributors) who participated in this project.
 
 
 ## License
