@@ -92,23 +92,25 @@
                         <div class="col-8">
                             <div class="banner-box mt-2"
                                  style="max-height: {{ maxHeight }}px; width: {{ maxWidth }}px;">
-                                <div style="
-                                        width: {{ request.ad.width }}px;
-                                        height: {{ request.ad.height }}px;
-                                        transform:scale({{ scale }});
-                                        ">
-                                    {% if request.type == 'image' %}
-                                        <img src="{{ request|image64(true) }}" border="0" alt=""/>
-                                    {% elseif request.type == 'direct' %}
-                                        <a href="{{ request.ad.content }}" target="_blank" rel="nofollow noreferrer noopener"></a>
-                                    {% else %}
-                                        <iframe srcdoc="{{ request.ad.content }}" sandbox="allow-scripts" width="100%"
-                                                height="100%"
-                                                marginwidth="0" marginheight="0" vspace="0" hspace="0"
-                                                allowtransparency="true"
-                                                scrolling="no" frameborder="0"></iframe>
-                                    {% endif %}
-                                </div>
+                                {% if request.type == 'direct' %}
+                                    <a href="{{ request.ad.content }}" target="_blank" rel="nofollow noreferrer noopener"></a>
+                                {% else %}
+                                    <div style="
+                                            width: {{ request.ad.width }}px;
+                                            height: {{ request.ad.height }}px;
+                                            transform:scale({{ scale }});
+                                            ">
+                                        {% if request.type == 'image' %}
+                                            <img src="{{ request|image64(true) }}" border="0" alt=""/>
+                                        {% else %}
+                                            <iframe srcdoc="{{ request.ad.content }}" sandbox="allow-scripts" width="100%"
+                                                    height="100%"
+                                                    marginwidth="0" marginheight="0" vspace="0" hspace="0"
+                                                    allowtransparency="true"
+                                                    scrolling="no" frameborder="0"></iframe>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="col-4 categories">
