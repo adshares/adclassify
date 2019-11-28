@@ -120,7 +120,7 @@ class ApiController extends AbstractController
             throw new UnprocessableEntityHttpException(sprintf('Invalid banner type (in %s)', $banner['id']));
         }
 
-        if (empty($banner['size']) || !preg_match('/^\d{1,5}x\d{1,5}$/i', $banner['size'])) {
+        if (empty($banner['size'])) {
             throw new UnprocessableEntityHttpException(sprintf('Invalid banner size (in %s)', $banner['id']));
         }
 
