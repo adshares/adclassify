@@ -93,7 +93,7 @@
                             <div class="banner-box mt-2"
                                  style="max-height: {{ maxHeight }}px; width: {{ maxWidth }}px;">
                                 {% if request.type == 'direct' %}
-                                    <a href="{{ request.ad.content }}" target="_blank" rel="nofollow noreferrer noopener"></a>
+                                    <code><a href="{{ request.ad.content }}" target="_blank" rel="nofollow noreferrer noopener">{{ request.ad.content }}</a></code>
                                 {% else %}
                                     <div style="
                                             width: {{ request.ad.width }}px;
