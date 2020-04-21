@@ -15,6 +15,7 @@
                 </div>
                 <div class="navbar-text">
                     <a href="{{ campaign.landingUrl }}"
+                       rel="nofollow noopener noreferrer"
                        target="_blank"
                        title="{{ campaign.landingUrl }}">{{ campaign.landingUrl|length > 50 ? campaign.landingUrl|slice(0, 50) ~ '…' : campaign.landingUrl }}</a><br/>
                     id: <code>{{ campaign.campaignId|hex }}</code>
