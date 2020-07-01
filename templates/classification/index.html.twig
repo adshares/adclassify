@@ -88,7 +88,6 @@
                     {% endfor %}
                 </div>
                 {% for request in requests %}
-                    {% set scale = min(1.0, maxWidth/request.ad.width, maxHeight/request.ad.height) %}
                     <div class="row border-bottom my-2 py-2 request">
                         <div class="col-8">
                             <div class="banner-box mt-2"
@@ -96,6 +95,7 @@
                                 {% if request.type == 'direct' %}
                                     <code><a href="{{ request.ad.content }}" target="_blank" rel="nofollow noreferrer noopener">{{ request.ad.content }}</a></code>
                                 {% else %}
+                                    {% set scale = min(1.0, maxWidth/request.ad.width, maxHeight/request.ad.height) %}
                                     <div style="
                                             width: {{ request.ad.width }}px;
                                             height: {{ request.ad.height }}px;
