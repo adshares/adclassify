@@ -140,7 +140,7 @@ class AdclassifyProcessNewCommand extends Command
 
         if ($content !== null && !$this->signer->checkContent($content, $request->getAd()->getChecksum())) {
             $content = null;
-            $request->setInfo('Invalid cehcksum');
+            $request->setInfo('Invalid checksum');
         }
 
         return $content;
