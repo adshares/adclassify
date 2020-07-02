@@ -93,8 +93,8 @@
                             <div class="banner-box mt-2"
                                  style="max-height: {{ maxHeight }}px; width: {{ maxWidth }}px;">
                                 {% if request.type == 'direct' %}
-                                    {% set directContent = request.ad.content|split('#', -1)|join('#') %}
-                                    <code><a href="{{ directContent }}" target="_blank" rel="nofollow noreferrer noopener">{{ directContent }}</a></code>
+                                    {% set directUrl = request.ad.content|split('#')|last == request.ad.size ? request.ad.content|split('#', -1)|join('#') : request.ad.content %}
+                                    <code><a href="{{ directUrl }}" target="_blank" rel="nofollow noreferrer noopener">{{ directUrl }}</a></code>
                                     <br />
                                     <code>{% if request.ad.size matches '/^\\d+x\\d+$/' %}iframe {% endif %}{{ request.ad.size }}</code>
                                 {% else %}
