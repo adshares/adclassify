@@ -15,6 +15,7 @@
                 </div>
                 <div class="navbar-text">
                     <a href="{{ campaign.landingUrl }}"
+                       rel="nofollow noopener noreferrer"
                        target="_blank"
                        title="{{ campaign.landingUrl }}">{{ campaign.landingUrl|length > 50 ? campaign.landingUrl|slice(0, 50) ~ '…' : campaign.landingUrl }}</a><br/>
                     id: <code>{{ campaign.campaignId|hex }}</code>
@@ -87,26 +88,33 @@
                     {% endfor %}
                 </div>
                 {% for request in requests %}
-                    {% set scale = min(1.0, maxWidth/request.ad.width, maxHeight/request.ad.height) %}
                     <div class="row border-bottom my-2 py-2 request">
                         <div class="col-8">
                             <div class="banner-box mt-2"
                                  style="max-height: {{ maxHeight }}px; width: {{ maxWidth }}px;">
-                                <div style="
-                                        width: {{ request.ad.width }}px;
-                                        height: {{ request.ad.height }}px;
-                                        transform:scale({{ scale }});
-                                        ">
-                                    {% if request.type == 'image' %}
-                                        <img src="{{ request|image64(true) }}" border="0" alt=""/>
-                                    {% else %}
-                                        <iframe srcdoc="{{ request.ad.content }}" sandbox="allow-scripts" width="100%"
-                                                height="100%"
-                                                marginwidth="0" marginheight="0" vspace="0" hspace="0"
-                                                allowtransparency="true"
-                                                scrolling="no" frameborder="0"></iframe>
-                                    {% endif %}
-                                </div>
+                                {% if request.type == 'direct' %}
+                                    {% set directUrl = request.ad.content|split('#')|last == request.ad.size ? request.ad.content|split('#', -1)|join('#') : request.ad.content %}
+                                    <code><a href="{{ directUrl }}" target="_blank" rel="nofollow noreferrer noopener">{{ directUrl }}</a></code>
+                                    <br />
+                                    <code>{% if request.ad.size matches '/^\\d+x\\d+$/' %}iframe {% endif %}{{ request.ad.size }}</code>
+                                {% else %}
+                                    {% set scale = min(1.0, maxWidth/request.ad.width, maxHeight/request.ad.height) %}
+                                    <div style="
+                                            width: {{ request.ad.width }}px;
+                                            height: {{ request.ad.height }}px;
+                                            transform:scale({{ scale }});
+                                            ">
+                                        {% if request.type == 'image' %}
+                                            <img src="{{ request|image64(true) }}" border="0" alt=""/>
+                                        {% else %}
+                                            <iframe srcdoc="{{ request.ad.content }}" sandbox="allow-scripts" width="100%"
+                                                    height="100%"
+                                                    marginwidth="0" marginheight="0" vspace="0" hspace="0"
+                                                    allowtransparency="true"
+                                                    scrolling="no" frameborder="0"></iframe>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="col-4 categories">

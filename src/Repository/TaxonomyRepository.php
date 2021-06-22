@@ -37,7 +37,7 @@ class TaxonomyRepository
             ],
             [
                 'key' => 'drugs',
-                'label' => 'Drugs',
+                'label' => 'Supplements',
                 'description' => 'Medicines, dietary supplement'
             ],
             [
@@ -52,8 +52,13 @@ class TaxonomyRepository
             ],
             [
                 'key' => 'malware',
-                'label' => 'Malware',
+                'label' => 'Software',
                 'description' => 'Software download, extensions'
+            ],
+            [
+                'key' => 'quality',
+                'label' => 'Quality Ads',
+                'description' => 'Safe and good quality ads'
             ],
             [
                 'key' => self::CATEGORY_SAFE,

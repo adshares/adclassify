@@ -172,12 +172,12 @@ class Ad
 
     public function getWidth(): int
     {
-        return explode('x', $this->size)[0];
+        return (int)explode('x', $this->size)[0];
     }
 
     public function getHeight(): int
     {
-        return explode('x', $this->size)[1];
+        return (int)explode('x', $this->size)[1];
     }
 
     public function isProcessed(): bool
