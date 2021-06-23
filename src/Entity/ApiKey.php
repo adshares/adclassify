@@ -21,7 +21,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ApiKey
 {
-    use TimestampableEntity, SoftDeleteableEntity;
+    use TimestampableEntity;
+    use SoftDeleteableEntity;
 
     /**
      * @var int

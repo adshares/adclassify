@@ -20,16 +20,16 @@ class Request
 {
     use TimestampableEntity;
 
-    const STATUS_PROCESSED = 0;
-    const STATUS_NEW = 1;
-    const STATUS_PENDING = 2;
-    const STATUS_FAILED = 3;
-    const STATUS_REJECTED = 4;
-    const STATUS_CANCELED = 5;
+    public const STATUS_PROCESSED = 0;
+    public const STATUS_NEW = 1;
+    public const STATUS_PENDING = 2;
+    public const STATUS_FAILED = 3;
+    public const STATUS_REJECTED = 4;
+    public const STATUS_CANCELED = 5;
 
-    const CALLBACK_SUCCESS = 0;
-    const CALLBACK_PENDING = 1;
-    const CALLBACK_FAILED = 2;
+    public const CALLBACK_SUCCESS = 0;
+    public const CALLBACK_PENDING = 1;
+    public const CALLBACK_FAILED = 2;
 
     private $streams = [];
 

@@ -4,7 +4,7 @@ namespace Adshares\Adclassify\Repository;
 
 class TaxonomyRepository
 {
-    const CATEGORY_SAFE = 'safe';
+    public const CATEGORY_SAFE = 'safe';
 
     public function getTaxonomy(): array
     {

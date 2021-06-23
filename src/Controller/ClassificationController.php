@@ -14,22 +14,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ClassificationController extends AbstractController
 {
-    const CATEGORY_REJECT = 'reject';
+    public const CATEGORY_REJECT = 'reject';
 
-    /**
-     * @var AdRepository
-     */
-    private $classificationRepository;
-
-    /**
-     * @var RequestRepository
-     */
-    private $requestRepository;
-
-    /**
-     * @var TaxonomyRepository
-     */
-    private $taxonomyRepository;
+    private AdRepository $classificationRepository;
+    private RequestRepository $requestRepository;
+    private TaxonomyRepository $taxonomyRepository;
 
     public function __construct(
         AdRepository $classificationRepository,
@@ -99,7 +88,6 @@ class ClassificationController extends AbstractController
 
         $cRequest = null;
         foreach ($classifications as $id => $categories) {
-
             /* @var $cRequest ClassificationRequest */
             if (($cRequest = $this->requestRepository->find($id)) === null) {
                 throw new \RuntimeException('Invalid classification request id');

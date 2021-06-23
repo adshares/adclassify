@@ -121,7 +121,6 @@ class AdclassifyProcessCallbackCommand extends Command
         $sent = 0;
         $httpClient = HttpClient::create();
         foreach ($adservers as $url => $data) {
-
             $success = false;
             try {
                 $response = $httpClient->request('PATCH', $url, [
@@ -137,7 +136,6 @@ class AdclassifyProcessCallbackCommand extends Command
                 } else {
                     $io->warning(sprintf('Received %d status code', $response->getStatusCode()));
                 }
-
             } catch (TransportExceptionInterface $exception) {
                 $success = false;
                 $io->warning($exception->getMessage());

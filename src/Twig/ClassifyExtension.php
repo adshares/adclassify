@@ -90,7 +90,7 @@ class ClassifyExtension extends AbstractExtension
     {
         if ($raw instanceof Request) {
             $raw = $raw->getAd()->getContent();
-        } else if ($raw instanceof Ad) {
+        } elseif ($raw instanceof Ad) {
             $raw = $raw->getContent();
         }
 

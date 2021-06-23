@@ -45,11 +45,13 @@ class WsseListener
         $this->logger->debug(sprintf('X-WSSE: %s', $request->headers->get('x-wsse')));
         // phpcs:ignore Generic.Files.LineLength.TooLong
         $wsseRegex = '/UsernameToken Username="(?P<username>[^"]+)", PasswordDigest="(?P<digest>[^"]+)", Nonce="(?P<nonce>[a-zA-Z0-9+\/]+={0,2})", Created="(?P<created>[^"]+)"/';
-        if (!$request->headers->has('x-wsse') || 1 !== preg_match(
+        if (
+            !$request->headers->has('x-wsse') || 1 !== preg_match(
                 $wsseRegex,
                 $request->headers->get('x-wsse'),
                 $matches
-            )) {
+            )
+        ) {
             return;
         }
 
