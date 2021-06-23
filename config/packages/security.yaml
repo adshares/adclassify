@@ -18,7 +18,7 @@ security:
         api:
             pattern: ^/api/
             stateless: true
-            wsse: true
+            wsse: { lifetime: 30 }
         info:
             pattern: ^/info
             security: false

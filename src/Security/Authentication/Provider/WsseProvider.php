@@ -12,25 +12,20 @@ use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProvid
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
-class WsseProvider implements AuthenticationProviderInterface
+final class WsseProvider implements AuthenticationProviderInterface
 {
-    const NONCE_LIFETIME = 30;
+    private ApiKeyRepository $apiKeyRepository;
 
-    /**
-     * @var ApiKeyRepository
-     */
-    private $apiKeyRepository;
+    private CacheItemPoolInterface $cachePool;
 
-    /**
-     * @var CacheItemPoolInterface
-     */
-    private $cachePool;
+    private int $lifetime;
 
-    protected $logger;
+    private ?LoggerInterface $logger;
 
     public function __construct(
         ApiKeyRepository $apiKeyRepository,
         CacheItemPoolInterface $cachePool,
+        int $lifetime = 300,
         LoggerInterface $logger = null
     ) {
         if ($logger === null) {
@@ -38,6 +33,7 @@ class WsseProvider implements AuthenticationProviderInterface
         }
         $this->apiKeyRepository = $apiKeyRepository;
         $this->cachePool = $cachePool;
+        $this->lifetime = $lifetime;
         $this->logger = $logger;
     }
 
@@ -51,12 +47,15 @@ class WsseProvider implements AuthenticationProviderInterface
             $this->logger->debug(sprintf('WSSE: Cannot find API key %s', $token->getUsername()));
         }
 
-        if ($apiKey && $this->validateDigest(
+        if (
+            $apiKey
+            && $this->validateDigest(
                 $token->getDigest(),
                 $token->getNonce(),
                 $token->getCreated(),
                 $apiKey->getSecret()
-            )) {
+            )
+        ) {
             $this->logger->debug(sprintf('WSSE: digest valid for %s', $apiKey->getUser()->getEmail()));
             $authenticatedToken = new WsseUserToken($apiKey->getUser()->getRoles());
             $authenticatedToken->setUser($apiKey->getUser());
@@ -75,8 +74,9 @@ class WsseProvider implements AuthenticationProviderInterface
         }
 
         // Expire timestamp after 5 minutes
-        if (time() - strtotime($created) > self::NONCE_LIFETIME) {
+        if (time() - strtotime($created) > $this->lifetime) {
             $this->logger->debug(sprintf('WSSE: Expire timestamp after 5 minutes (%s)', $created));
+
             return false;
         }
 
@@ -96,7 +96,7 @@ class WsseProvider implements AuthenticationProviderInterface
         }
 
         // Store the item in cache for 5 minutes
-        $cacheItem->set(null)->expiresAfter(self::NONCE_LIFETIME);
+        $cacheItem->set(null)->expiresAfter($this->lifetime);
         $this->cachePool->save($cacheItem);
 
         // Validate Secret

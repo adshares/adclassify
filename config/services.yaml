@@ -28,6 +28,10 @@ services:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
 
+#    Adshares\Adclassify\Security\Authentication\Provider\WsseProvider:
+#        arguments:
+#            $cachePool: '@cache.app'
+
     Adshares\Adclassify\Security\Firewall\WsseListener:
         arguments: ['@security.token_storage', '@security.authentication.manager']
         public: false

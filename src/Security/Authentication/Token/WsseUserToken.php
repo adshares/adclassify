@@ -4,22 +4,11 @@ namespace Adshares\Adclassify\Security\Authentication\Token;
 
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 
-class WsseUserToken extends AbstractToken
+final class WsseUserToken extends AbstractToken
 {
-    /**
-     * @var string
-     */
-    protected $created;
-
-    /**
-     * @var string
-     */
-    protected $digest;
-
-    /**
-     * @var string
-     */
-    protected $nonce;
+    protected string $created;
+    protected string $digest;
+    protected string $nonce;
 
     public function __construct(array $roles = [])
     {

@@ -9,17 +9,19 @@ use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class WsseFactory implements SecurityFactoryInterface
+final class WsseFactory implements SecurityFactoryInterface
 {
-    public function create(ContainerBuilder $container, $id, $config, $userProvider, $defaultEntryPoint): array
+    public function create(ContainerBuilder $container, $id, $config, $userProviderId, $defaultEntryPointId): array
     {
         $providerId = 'security.authentication.provider.wsse.' . $id;
-        $container->setDefinition($providerId, new ChildDefinition(WsseProvider::class));
+        $container
+            ->setDefinition($providerId, new ChildDefinition(WsseProvider::class))
+            ->setArgument(2, $config['lifetime']);
 
         $listenerId = 'security.authentication.listener.wsse.' . $id;
         $container->setDefinition($listenerId, new ChildDefinition(WsseListener::class));
 
-        return [$providerId, $listenerId, $defaultEntryPoint];
+        return [$providerId, $listenerId, $defaultEntryPointId];
     }
 
     public function getPosition(): string
@@ -32,7 +34,11 @@ class WsseFactory implements SecurityFactoryInterface
         return 'wsse';
     }
 
-    public function addConfiguration(NodeDefinition $node): void
+    public function addConfiguration(NodeDefinition $builder): void
     {
+        $builder
+            ->children()
+            ->scalarNode('lifetime')->defaultValue(300)
+            ->end();
     }
 }
