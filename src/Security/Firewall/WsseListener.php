@@ -13,17 +13,10 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 class WsseListener
 {
-    /**
-     * @var TokenStorageInterface
-     */
-    protected $tokenStorage;
 
-    /**
-     * @var AuthenticationManagerInterface
-     */
-    protected $authenticationManager;
-
-    protected $logger;
+    protected TokenStorageInterface $tokenStorage;
+    protected AuthenticationManagerInterface $authenticationManager;
+    protected ?LoggerInterface $logger;
 
     public function __construct(
         TokenStorageInterface $tokenStorage,

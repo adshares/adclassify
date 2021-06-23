@@ -27,12 +27,12 @@
                 <div>
                     {% if prevCampaign %}
                         <a class="btn btn-primary btn-sm"
-                           href="{{ path('classification', {'requestId': prevCampaign.id}) }}"><i
+                           href="{{ path('classification_index', {'requestId': prevCampaign.id}) }}"><i
                                     class="fas fa-chevron-left mr-2"></i>Prev</a>
                     {% endif %}
                     {% if nextCampaign %}
                         <a class="btn btn-primary btn-sm"
-                           href="{{ path('classification', {'requestId': nextCampaign.id}) }}">Next<i
+                           href="{{ path('classification_index', {'requestId': nextCampaign.id}) }}">Next<i
                                     class="fas fa-chevron-right ml-2"></i></a>
                     {% endif %}
                 </div>

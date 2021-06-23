@@ -1,4 +1,4 @@
-{% spaceless %}
+{% apply spaceless %}
     {% set nearbyPagesLimit = 3 %}
     {% set totalPages = max(1, totalPages) %}
     <nav>
@@ -38,4 +38,4 @@
             </li>
         </ul>
     </nav>
-{% endspaceless %}
+{% endapply %}

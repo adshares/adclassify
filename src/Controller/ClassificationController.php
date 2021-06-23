@@ -11,7 +11,11 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/classification", name="classification_")
+ */
 class ClassificationController extends AbstractController
 {
     public const CATEGORY_REJECT = 'reject';
@@ -30,7 +34,10 @@ class ClassificationController extends AbstractController
         $this->taxonomyRepository = $taxonomyRepository;
     }
 
-    public function index(?string $requestId = null): Response
+    /**
+     * @Route("/{requestId}", requirements={"requestId"="\d+"}, methods={"GET"}, name="index")
+     */
+    public function index(?int $requestId = null): Response
     {
         if ($requestId !== null) {
             if (($request = $this->requestRepository->find($requestId)) === null) {
@@ -72,6 +79,9 @@ class ClassificationController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/", methods={"POST"}, name="save")
+     */
     public function save(Request $request): Response
     {
         $submittedToken = $request->request->get('token');
@@ -137,11 +147,14 @@ class ClassificationController extends AbstractController
 
         $next = $this->requestRepository->findNextPending($cRequest);
 
-        return new RedirectResponse($this->generateUrl('classification', [
+        return new RedirectResponse($this->generateUrl('classification_index', [
             'requestId' => $next ? $next->getId() : null
         ]));
     }
 
+    /**
+     * @Route("/status", methods={"GET"}, name="status")
+     */
     public function status(Request $request): Response
     {
         $limit = 50;

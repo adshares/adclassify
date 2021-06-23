@@ -16,28 +16,17 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/api/v{version}", requirements={"version"="0|1"}, name="api_")
+ */
 class ApiController extends AbstractController
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var AdRepository
-     */
-    private $classificationRepository;
-
-    /**
-     * @var RequestRepository
-     */
-    private $requestRepository;
-
-    /**
-     * @var Signer
-     */
-    private $signer;
+    private LoggerInterface $logger;
+    private AdRepository $classificationRepository;
+    private RequestRepository $requestRepository;
+    private Signer $signer;
 
     public function __construct(
         AdRepository $classificationRepository,
@@ -54,6 +43,9 @@ class ApiController extends AbstractController
         $this->logger = $logger;
     }
 
+    /**
+     * @Route("/taxonomy", methods={"GET"}, name="taxonomy")
+     */
     public function getTaxonomy(TaxonomyRepository $repository): Response
     {
         $taxonomy = [
@@ -67,6 +59,9 @@ class ApiController extends AbstractController
         return new JsonResponse($taxonomy);
     }
 
+    /**
+     * @Route("/requests", methods={"POST"}, name="requests")
+     */
     public function postRequests(Request $request): Response
     {
         $data = json_decode($request->getContent(), true);

@@ -6,15 +6,22 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 class AppController extends AbstractController
 {
 
+    /**
+     * @Route("/", methods={"GET"}, name="index")
+     */
     public function index(): Response
     {
-        return new RedirectResponse($this->generateUrl('classification'));
+        return new RedirectResponse($this->generateUrl('classification_index'));
     }
 
+    /**
+     * @Route("/info.{_format}", methods={"GET"}, format="json", requirements={"_format": "json|txt"}, name="info")
+     */
     public function info(Request $request): Response
     {
         srand(crc32($request->getClientIp() . date('-d-m-Y-h')));

@@ -25,14 +25,14 @@
                         <td>
                             {% if request.isPending %}
                                 <a class="badge badge-primary"
-                                   href="{{ path('classification', {'requestId': request.id}) }}"><i
+                                   href="{{ path('classification_index', {'requestId': request.id}) }}"><i
                                             class="fas fa-pen mr-1"></i> Classify</a>
                             {% elseif request.isProcessed %}
-                                <a class="small" href="{{ path('classification', {'requestId': request.id}) }}"
+                                <a class="small" href="{{ path('classification_index', {'requestId': request.id}) }}"
                                    title="Edit classification">{{ request.ad.keywords|keywords }}</a>
                             {% elseif request.isRejected %}
                                 <a class="badge badge-secondary"
-                                   href="{{ path('classification', {'requestId': request.id}) }}"
+                                   href="{{ path('classification_index', {'requestId': request.id}) }}"
                                    title="Edit classification"><i class="fas fa-pen mr-1"></i> Edit</a>
                             {% endif %}
                         </td>
