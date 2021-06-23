@@ -1,64 +1,80 @@
-var Encore = require('@symfony/webpack-encore')
-var CopyWebpackPlugin = require('copy-webpack-plugin')
+const Encore = require('@symfony/webpack-encore');
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+
+// Manually configure the runtime environment if not already configured yet by the "encore" command.
+// It's useful when you use tools that rely on webpack.config.js file.
+if (!Encore.isRuntimeEnvironmentConfigured()) {
+    Encore.configureRuntimeEnvironment(process.env.NODE_ENV || 'dev');
+}
 
 Encore
-// directory where compiled assets will be stored
-  .setOutputPath('public/build/')
-  // public path used by the web server to access the output path
-  .setPublicPath('/build')
-  // only needed for CDN's or sub-directory deploy
-  //.setManifestKeyPrefix('build/')
-  //.addRule({parser: {amd: false}})
+    // directory where compiled assets will be stored
+    .setOutputPath('public/build/')
+    // public path used by the web server to access the output path
+    .setPublicPath('/build')
+    // only needed for CDN's or sub-directory deploy
+    //.setManifestKeyPrefix('build/')
 
-  /*
-   * ENTRY CONFIG
-   *
-   * Add 1 entry for each "page" of your app
-   * (including one that's included on every page - e.g. "app")
-   *
-   * Each entry will result in one JavaScript file (e.g. app.js)
-   * and one CSS file (e.g. app.css) if you JavaScript imports CSS.
-   */
-  .addEntry('js/app', './assets/js/app.js')
-  .addStyleEntry('css/app', ['./assets/css/app.scss'])
-  .addStyleEntry('css/min', ['./assets/css/min.scss'])
-  .addStyleEntry('css/regular', ['./assets/css/regular.scss'])
+    /*
+     * ENTRY CONFIG
+     *
+     * Each entry will result in one JavaScript file (e.g. app.js)
+     * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
+     */
+    .addEntry('js/app', './assets/js/app.js')
+    .addStyleEntry('css/app', ['./assets/css/app.scss'])
+    .addStyleEntry('css/min', ['./assets/css/min.scss'])
+    .addStyleEntry('css/regular', ['./assets/css/regular.scss'])
 
-  .addPlugin(new CopyWebpackPlugin([
-    {from: './assets/img', to: 'images'}
-  ]))
+    .addPlugin(new CopyWebpackPlugin([
+        {from: './assets/img', to: 'images'}
+    ]))
 
-  // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
-  .splitEntryChunks()
+    // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
+    .splitEntryChunks()
 
-  // will require an extra script tag for runtime.js
-  // but, you probably want this, unless you're building a single-page app
-  .enableSingleRuntimeChunk()
+    // will require an extra script tag for runtime.js
+    // but, you probably want this, unless you're building a single-page app
+    .enableSingleRuntimeChunk()
 
-  /*
-   * FEATURE CONFIG
-   *
-   * Enable & configure other features below. For a full
-   * list of features, see:
-   * https://symfony.com/doc/current/frontend.html#adding-more-features
-   */
-  .cleanupOutputBeforeBuild()
-  .enableBuildNotifications()
-  .enableSourceMaps(!Encore.isProduction())
-  // enables hashed filenames (e.g. app.abc123.css)
-  .enableVersioning(Encore.isProduction())
+    /*
+     * FEATURE CONFIG
+     *
+     * Enable & configure other features below. For a full
+     * list of features, see:
+     * https://symfony.com/doc/current/frontend.html#adding-more-features
+     */
+    .cleanupOutputBeforeBuild()
+    .enableBuildNotifications()
+    .enableSourceMaps(!Encore.isProduction())
+    // enables hashed filenames (e.g. app.abc123.css)
+    .enableVersioning(Encore.isProduction())
 
-  // enables Sass/SCSS support
-  .enableSassLoader()
+    .configureBabel((config) => {
+        config.plugins.push('@babel/plugin-proposal-class-properties');
+    })
 
-  // uncomment if you use TypeScript
-  //.enableTypeScriptLoader()
+    // enables @babel/preset-env polyfills
+    .configureBabelPresetEnv((config) => {
+        config.useBuiltIns = 'usage';
+        config.corejs = 3;
+    })
 
-  // uncomment if you're having problems with a jQuery plugin
-  //.autoProvidejQuery()
+    // enables Sass/SCSS support
+    .enableSassLoader()
 
-  // uncomment if you use API Platform Admin (composer req api-admin)
-  //.enableReactPreset()
+    // uncomment if you use TypeScript
+    //.enableTypeScriptLoader()
 
+    // uncomment if you use React
+    //.enableReactPreset()
 
-module.exports = Encore.getWebpackConfig()
+    // uncomment to get integrity="..." attributes on your script & link tags
+    // requires WebpackEncoreBundle 1.4 or higher
+    //.enableIntegrityHashes(Encore.isProduction())
+
+    // uncomment if you're having problems with a jQuery plugin
+    //.autoProvidejQuery()
+;
+
+module.exports = Encore.getWebpackConfig();
