@@ -17,6 +17,9 @@ doctrine:
             soft-deleteable:
                 class: 'Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter'
                 enabled: true
+        dql:
+            string_functions:
+                HEX: Adshares\Adclassify\Query\HexFunction
         mappings:
             App:
                 is_bundle: false

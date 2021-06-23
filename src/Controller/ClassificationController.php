@@ -6,6 +6,7 @@ use Adshares\Adclassify\Entity\Request as ClassificationRequest;
 use Adshares\Adclassify\Repository\AdRepository;
 use Adshares\Adclassify\Repository\RequestRepository;
 use Adshares\Adclassify\Repository\TaxonomyRepository;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,16 +21,13 @@ class ClassificationController extends AbstractController
 {
     public const CATEGORY_REJECT = 'reject';
 
-    private AdRepository $classificationRepository;
     private RequestRepository $requestRepository;
     private TaxonomyRepository $taxonomyRepository;
 
     public function __construct(
-        AdRepository $classificationRepository,
         RequestRepository $requestRepository,
         TaxonomyRepository $taxonomyRepository
     ) {
-        $this->classificationRepository = $classificationRepository;
         $this->requestRepository = $requestRepository;
         $this->taxonomyRepository = $taxonomyRepository;
     }
@@ -37,27 +35,28 @@ class ClassificationController extends AbstractController
     /**
      * @Route("/{requestId}", requirements={"requestId"="\d+"}, methods={"GET"}, name="index")
      */
-    public function index(?int $requestId = null): Response
+    public function index(Request $request, ?int $requestId = null): Response
     {
+        $query = $request->query->get('query', null);
         if ($requestId !== null) {
-            if (($request = $this->requestRepository->find($requestId)) === null) {
+            if (($campaign = $this->requestRepository->find($requestId)) === null) {
                 throw new NotFoundHttpException(sprintf('Cannot find request #%d', $requestId));
             }
         } else {
-            $request = $this->requestRepository->findNextPending();
+            $campaign = $this->requestRepository->findNextPending();
         }
 
         $requests = [];
         $prevCampaign = $nextCampaign = null;
 
-        if ($request !== null) {
-            if ($request->getStatus() === ClassificationRequest::STATUS_REJECTED) {
-                $requests = [$request];
+        if ($campaign !== null) {
+            if ($campaign->getStatus() === ClassificationRequest::STATUS_REJECTED) {
+                $requests = [$campaign];
             } else {
-                $requests = $this->requestRepository->findByCampaign($request);
+                $requests = $this->requestRepository->findByCampaign($campaign);
             }
-            $prevCampaign = $this->requestRepository->findNextPending($request, false);
-            $nextCampaign = $this->requestRepository->findNextPending($request);
+            $prevCampaign = $this->requestRepository->findNextPending($campaign, false);
+            $nextCampaign = $this->requestRepository->findNextPending($campaign);
         }
 
         $categories = $this->taxonomyRepository->getCatgories();
@@ -70,12 +69,13 @@ class ClassificationController extends AbstractController
 
         return $this->render('classification/index.html.twig', [
             'requests' => $requests,
-            'campaign' => $request,
+            'campaign' => $campaign,
             'prevCampaign' => $prevCampaign,
             'nextCampaign' => $nextCampaign,
             'categories' => $categories,
             'categorySafe' => $categorySafe,
             'categoryReject' => $categoryReject,
+            'query' => $query,
         ]);
     }
 
@@ -88,7 +88,7 @@ class ClassificationController extends AbstractController
         $classifications = $request->request->get('classifications', []);
 
         if (!$this->isCsrfTokenValid('panel', $submittedToken)) {
-            throw new \RuntimeException('Invalid CSRF token');
+            throw new RuntimeException('Invalid CSRF token');
         }
 
         $entityManager = $this->getDoctrine()->getManager();
@@ -100,7 +100,7 @@ class ClassificationController extends AbstractController
         foreach ($classifications as $id => $categories) {
             /* @var $cRequest ClassificationRequest */
             if (($cRequest = $this->requestRepository->find($id)) === null) {
-                throw new \RuntimeException('Invalid classification request id');
+                throw new RuntimeException('Invalid classification request id');
             }
 
             $ad = $cRequest->getAd();
@@ -162,12 +162,42 @@ class ClassificationController extends AbstractController
         $sort = 'id';
         $order = 'desc';
 
-        $requests = $this->requestRepository->findPaginated($limit, ($page - 1) * $limit, $sort, $order);
+        $query = $request->query->get('query', null);
+
+        $requests = $this->requestRepository->findPaginated($query, $limit, ($page - 1) * $limit, $sort, $order);
 
         return $this->render('classification/status.html.twig', [
             'requests' => $requests,
             'currentPage' => $page,
             'totalPages' => ceil($requests->count() / $limit),
+            'query' => $query,
         ]);
+    }
+
+    /**
+     * @Route("/search", methods={"GET", "POST"}, name="search")
+     */
+    public function search(Request $request): Response
+    {
+        $query = $request->query->get('query', null);
+        $builder = $this->requestRepository->getFindBuilder($query);
+
+        $builder->select('r.campaignId, MIN(r.id) AS id')
+            ->groupBy('r.campaignId');
+
+        $result = $builder->getQuery()->getResult();
+
+        if (count($result) === 1) {
+            $route = 'classification_index';
+            $requestId = $result[0]['id'];
+        } else {
+            $route = 'classification_status';
+            $requestId = null;
+        }
+
+        return new RedirectResponse($this->generateUrl($route, [
+            'requestId' => $requestId,
+            'query' => $query,
+        ]));
     }
 }
