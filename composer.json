@@ -14,7 +14,7 @@
 		}
 	],
 	"require": {
-		"php": "^7.2",
+		"php": "^7.4",
 		"ext-ctype": "*",
 		"ext-curl": "*",
 		"ext-iconv": "*",
@@ -52,8 +52,7 @@
 		"symfony/maker-bundle": "^1.32",
 		"symfony/profiler-pack": "^1.0",
 		"symfony/test-pack": "^1.0",
-		"symfony/var-dumper": "^4.4",
-		"symfony/web-server-bundle": "^4.4"
+		"symfony/var-dumper": "^4.4"
 	},
 	"config": {
 		"preferred-install": {
@@ -94,7 +93,8 @@
 			"parallel-lint --no-colors --blame --exclude vendor .",
 			"phpcs -s src --standard=PHPCompatibility",
 			"phpcs -s src --standard=PSR2"
-		]
+		],
+		"dev": "php -t ./public -S adclassify.local:8015"
 	},
 	"conflict": {
 		"symfony/symfony": "*"
