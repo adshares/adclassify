@@ -44,7 +44,7 @@ vi .env.local.php
 php bin/console doctrine:schema:create
 php bin/console doctrine:schema:update
 yarn
-yarn encore production
+yarn build
 ```
 
 Nginx configuration:

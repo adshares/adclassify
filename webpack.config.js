@@ -26,9 +26,11 @@ Encore
     .addStyleEntry('css/min', ['./assets/css/min.scss'])
     .addStyleEntry('css/regular', ['./assets/css/regular.scss'])
 
-    .addPlugin(new CopyWebpackPlugin([
-        {from: './assets/img', to: 'images'}
-    ]))
+    .addPlugin(new CopyWebpackPlugin({
+        patterns: [
+            {from: './assets/img', to: 'images'}
+        ]
+    }))
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
