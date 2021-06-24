@@ -27,13 +27,10 @@ composer install
 composer dump-env dev
 vi .env.local.php
 php bin/console doctrine:schema:create
-or
 php bin/console doctrine:schema:update
-or
-php bin/console doctrine:migration:migrate
 yarn
-yarn encore dev
-php bin/console server:run
+yarn dev
+composer dev or php -t ./public -S adclassify.local:8015
 ```
 
 ### Production
@@ -45,11 +42,9 @@ composer install --no-dev --no-scripts --optimize-autoloader
 composer dump-env prod
 vi .env.local.php
 php bin/console doctrine:schema:create
-php bin/console doctrine:migration:migrate
-or
 php bin/console doctrine:schema:update
 yarn
-yarn encore production
+yarn build
 ```
 
 Nginx configuration:

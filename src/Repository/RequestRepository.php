@@ -6,7 +6,8 @@ use Adshares\Adclassify\Entity\Ad;
 use Adshares\Adclassify\Entity\Request;
 use Adshares\Adclassify\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class RequestRepository extends ServiceEntityRepository
@@ -16,21 +17,39 @@ class RequestRepository extends ServiceEntityRepository
         parent::__construct($registry, Request::class);
     }
 
+    public function getFindBuilder(
+        ?string $query = null
+    ): QueryBuilder {
+        $builder = $this->createQueryBuilder('r');
+        $query = self::prepareQuery($query ?? '');
+        if (!empty($query)) {
+            $builder->leftJoin('r.ad', 'a');
+            $builder->where('HEX(r.campaignId) LIKE :query');
+            $builder->orWhere('HEX(r.bannerId) LIKE :query');
+            $builder->orWhere('r.serveUrl LIKE :query');
+            $builder->orWhere('r.landingUrl LIKE :query');
+            $builder->orWhere('HEX(a.checksum) LIKE :query');
+//            $builder->orWhere('HEX(a.content) LIKE :hexQuery');
+            $builder->setParameter('query', sprintf('%%%s%%', $query));
+//            $builder->setParameter('hexQuery', sprintf('%%%s%%', bin2hex($query)));
+        }
+        return $builder;
+    }
+
     public function findPaginated(
+        ?string $query = null,
         int $limit = 2,
         int $offset = 0,
         ?string $sort = null,
         ?string $order = null
     ): Paginator {
-        $query = $this->createQueryBuilder('e')
+        $builder = $this->getFindBuilder($query)
             ->setFirstResult($offset)
             ->setMaxResults($limit);
-
         if ($sort !== null) {
-            $query->orderBy('e.' . $sort, $order);
+            $builder->orderBy('r.' . $sort, $order);
         }
-
-        return new Paginator($query, $fetchJoinCollection = false);
+        return new Paginator($builder, false);
     }
 
     public function findByAd(Ad $ad): array
@@ -75,11 +94,13 @@ class RequestRepository extends ServiceEntityRepository
 
     public function findPendingDuplicates(User $user, string $bannerId): array
     {
-        return $this->findBy([
-            'user' => $user,
-            'bannerId' => $bannerId,
-            'status' => [Request::STATUS_NEW, Request::STATUS_PENDING],
-        ]);
+        return $this->findBy(
+            [
+                'user' => $user,
+                'bannerId' => $bannerId,
+                'status' => [Request::STATUS_NEW, Request::STATUS_PENDING],
+            ]
+        );
     }
 
     public function findReadyToProcess(int $limit = null, bool $includeFailed = false): array
@@ -89,16 +110,24 @@ class RequestRepository extends ServiceEntityRepository
             $status[] = Request::STATUS_FAILED;
         }
 
-        return $this->findBy([
-            'status' => $status,
-        ], null, $limit);
+        return $this->findBy(
+            [
+                'status' => $status,
+            ],
+            null,
+            $limit
+        );
     }
 
     public function findReadyToCallback(int $limit = null): array
     {
-        return $this->findBy([
-            'callbackStatus' => Request::CALLBACK_PENDING,
-        ], null, $limit);
+        return $this->findBy(
+            [
+                'callbackStatus' => Request::CALLBACK_PENDING,
+            ],
+            null,
+            $limit
+        );
     }
 
     public function saveBatch(array $requests): void
@@ -107,5 +136,25 @@ class RequestRepository extends ServiceEntityRepository
             $this->_em->persist($request);
         }
         $this->_em->flush();
+    }
+
+    private static function prepareQuery(string $query): string
+    {
+        $query = trim($query);
+
+        if (preg_match('/^(0x|x)?([0-9a-fA-F]+)$/', $query, $matches)) {
+            return $matches[2];
+        }
+
+        if (false !== filter_var($query, FILTER_VALIDATE_URL)) {
+            $parts = parse_url($query);
+            if (strpos($parts['path'] ?? '', '/serve/') === 0) {
+                return $parts['path'];
+            }
+            return sprintf('//%s%s', $parts['host'] ?? '', $parts['path'] ?? '');
+        }
+
+
+        return preg_replace('/#.*$/', '', $query);
     }
 }

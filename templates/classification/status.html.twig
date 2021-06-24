@@ -18,29 +18,29 @@
                 <tbody>
                 {% for request in requests %}
                     <tr>
-                        <th scope="row">{{ request.id }}</th>
-                        <td>{{ request.createdAt|date('Y-m-d H:m:s') }}</td>
-                        <td>{{ request.user.fullName }}</td>
-                        <td><code>{{ request.ad.checksum|hex }}</code></td>
+                        <th class="text-nowrap" scope="row">{{ request.id }}</th>
+                        <td class="text-nowrap">{{ request.createdAt|date('Y-m-d H:m:s') }}</td>
+                        <td class="text-nowrap">{{ request.user.fullName }}</td>
+                        <td class="text-nowrap"><code>{{ request.ad.checksum|hex }}</code></td>
                         <td>
                             {% if request.isPending %}
                                 <a class="badge badge-primary"
-                                   href="{{ path('classification', {'requestId': request.id}) }}"><i
+                                   href="{{ path('classification_index', {'requestId': request.id, 'query': query}) }}"><i
                                             class="fas fa-pen mr-1"></i> Classify</a>
                             {% elseif request.isProcessed %}
-                                <a class="small" href="{{ path('classification', {'requestId': request.id}) }}"
+                                <a class="small" href="{{ path('classification_index', {'requestId': request.id, 'query': query}) }}"
                                    title="Edit classification">{{ request.ad.keywords|keywords }}</a>
                             {% elseif request.isRejected %}
                                 <a class="badge badge-secondary"
-                                   href="{{ path('classification', {'requestId': request.id}) }}"
+                                   href="{{ path('classification_index', {'requestId': request.id, 'query': query}) }}"
                                    title="Edit classification"><i class="fas fa-pen mr-1"></i> Edit</a>
                             {% endif %}
                         </td>
-                        <td>
+                        <td class="text-nowrap">
                             <span class="badge badge-rs{{ request.status }}"
                                   title="{{ request|requestStatus(true) }}">{{ request|requestStatus }}</span>
                         </td>
-                        <td>
+                        <td class="text-nowrap">
                             <span class="badge badge-rcs{{ request.callbackStatus }}"
                                   title="{{ request|callbackStatus(true) }}">{{ request|callbackStatus }}</span>
                         </td>
@@ -54,6 +54,6 @@
                 The list of requests <b>is empty</b>.
             </div>
         {% endif %}
-        {% include 'utils/pagination.html.twig' with {'url': 'classification_status'} %}
+        {% include 'utils/pagination.html.twig' with {'url': 'classification_status', 'query': {'query': query}} %}
     </div>
 {% endblock %}

@@ -2,10 +2,9 @@
 
 namespace Adshares\Adclassify\Repository;
 
-use Adshares\Adclassify\Entity\ApiKey;
 use Adshares\Adclassify\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserRepository extends ServiceEntityRepository

@@ -1,5 +1,5 @@
 security:
-    encoders:
+    password_hashers:
         # Our user class and the algorithm we'll use to encode passwords
         # https://symfony.com/doc/current/security.html#c-encoding-the-user-s-password
         Adshares\Adclassify\Entity\User:
@@ -18,7 +18,7 @@ security:
         api:
             pattern: ^/api/
             stateless: true
-            wsse: true
+            wsse: { lifetime: 30 }
         info:
             pattern: ^/info
             security: false

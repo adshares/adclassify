@@ -5,8 +5,10 @@ namespace Adshares\Adclassify\Command;
 use Adshares\Adclassify\Entity\Request as ClassificationRequest;
 use Adshares\Adclassify\Repository\RequestRepository;
 use Adshares\Adclassify\Service\Signer;
+use DateTime;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -19,20 +21,9 @@ class AdclassifyProcessCallbackCommand extends Command
 {
     protected static $defaultName = 'app:process:callback';
 
-    /**
-     * @var RequestRepository
-     */
-    protected $requestRepository;
-
-    /**
-     * @var Signer
-     */
-    protected $signer;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
+    protected RequestRepository $requestRepository;
+    protected Signer $signer;
+    protected ?LoggerInterface $logger;
 
     public function __construct(
         RequestRepository $requestRepository,
@@ -85,6 +76,8 @@ class AdclassifyProcessCallbackCommand extends Command
         $info = sprintf('Sent %d requests, %d failed', $success, $failed);
         $this->logger->info($info);
         $io->success($info);
+
+        return Command::SUCCESS;
     }
 
     private function processRequests(array $requests, SymfonyStyle $io): int
@@ -98,7 +91,7 @@ class AdclassifyProcessCallbackCommand extends Command
             if ($request->getStatus() === ClassificationRequest::STATUS_PROCESSED) {
                 $ad = $request->getAd();
                 if (!$ad->isProcessed()) {
-                    throw new \RuntimeException(sprintf(
+                    throw new RuntimeException(sprintf(
                         'Classification %s [#%d] is not processed',
                         bin2hex($ad->getChecksum()),
                         $ad->getId()
@@ -121,7 +114,6 @@ class AdclassifyProcessCallbackCommand extends Command
         $sent = 0;
         $httpClient = HttpClient::create();
         foreach ($adservers as $url => $data) {
-
             $success = false;
             try {
                 $response = $httpClient->request('PATCH', $url, [
@@ -137,7 +129,6 @@ class AdclassifyProcessCallbackCommand extends Command
                 } else {
                     $io->warning(sprintf('Received %d status code', $response->getStatusCode()));
                 }
-
             } catch (TransportExceptionInterface $exception) {
                 $success = false;
                 $io->warning($exception->getMessage());
@@ -146,7 +137,7 @@ class AdclassifyProcessCallbackCommand extends Command
             foreach ($data as $row) {
                 /* @var $request ClassificationRequest */
                 $request = $origin[$url][$row['id']];
-                $request->setSentAt(new \DateTime());
+                $request->setSentAt(new DateTime());
                 $request->setCallbackStatus(
                     $success ?
                         ClassificationRequest::CALLBACK_SUCCESS :

@@ -20,20 +20,9 @@ class AdclassifyProcessNewCommand extends Command
 {
     protected static $defaultName = 'app:process:new';
 
-    /**
-     * @var RequestRepository
-     */
-    protected $requestRepository;
-
-    /**
-     * @var Signer
-     */
-    protected $signer;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
+    protected RequestRepository $requestRepository;
+    protected Signer $signer;
+    protected ?LoggerInterface $logger;
 
     public function __construct(
         RequestRepository $requestRepository,
@@ -87,6 +76,8 @@ class AdclassifyProcessNewCommand extends Command
         $info = sprintf('Processed %d requests, %d failed', $success, $failed);
         $this->logger->info($info);
         $io->success($info);
+
+        return Command::SUCCESS;
     }
 
     private function processRequests(array $requests, SymfonyStyle $io): int
