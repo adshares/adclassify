@@ -2,22 +2,20 @@
 
 namespace Adshares\Adclassify\Command;
 
-use Adshares\Adclassify\Entity\ApiKey;
-use Adshares\Adclassify\Entity\User;
 use Adshares\Adclassify\Repository\UserRepository;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AdclassifyCreateUserCommand extends Command
 {
     protected static $defaultName = 'app:user:create';
 
-    private $userRepository;
+    private UserRepository $userRepository;
 
     public function __construct(
         UserRepository $userRepository,
@@ -44,18 +42,18 @@ class AdclassifyCreateUserCommand extends Command
 
         $email = $input->getArgument('email') ?? $io->ask('Email address');
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new \RuntimeException('Invalid email address.');
+            throw new RuntimeException('Invalid email address.');
         }
 
         $fullname = $input->getArgument('fullname') ?? $io->ask('Full name');
         if (empty($fullname)) {
-            throw new \RuntimeException('Name cannot be empty.');
+            throw new RuntimeException('Name cannot be empty.');
         }
 
         $password = str_replace(['+', '/', '='], ['x', 'y', ''], base64_encode(random_bytes(8)));
         $password = $input->getArgument('password') ?? $io->ask('Password', $password);
         if (empty($password)) {
-            throw new \RuntimeException('Password cannot be empty.');
+            throw new RuntimeException('Password cannot be empty.');
         }
 
         $role = 'CLIENT';
@@ -74,5 +72,7 @@ class AdclassifyCreateUserCommand extends Command
             sprintf('API key name: %s', $apiKey->getName()),
             sprintf('API key secret: %s', $apiKey->getSecret()),
         ]);
+
+        return Command::SUCCESS;
     }
 }

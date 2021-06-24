@@ -4,7 +4,7 @@ namespace Adshares\Adclassify\Repository;
 
 use Adshares\Adclassify\Entity\Ad;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 class AdRepository extends ServiceEntityRepository
 {

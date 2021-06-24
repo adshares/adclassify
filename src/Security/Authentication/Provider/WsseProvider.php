@@ -64,7 +64,7 @@ final class WsseProvider implements AuthenticationProviderInterface
     }
 
     protected function validateDigest(string $digest, string $nonce, string $created, string $secret): bool
-    {return true;
+    {
         // Check created time is not in the future
         if (strtotime($created) > time()) {
             return false;

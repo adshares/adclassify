@@ -6,7 +6,7 @@ use Adshares\Adclassify\Entity\Ad;
 use Adshares\Adclassify\Entity\Request;
 use Adshares\Adclassify\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
