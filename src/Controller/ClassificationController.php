@@ -118,22 +118,22 @@ class ClassificationController extends AbstractController
 
             $ad = $cRequest->getAd();
 
-            if (isset($categories[TaxonomyRepository::CATEGORY][self::CATEGORY_REJECT])) {
+            if (isset($categories[self::CATEGORY_REJECT])) {
                 if ($ad->isRejected()) {
-                    break;
+                    continue;
                 }
                 $ad->setRejected(true);
             } else {
                 $ad->setRejected(false);
-                if (isset($categories[TaxonomyRepository::CATEGORY][TaxonomyRepository::CATEGORY_SAFE])) {
+                if (isset($categories[TaxonomyRepository::CATEGORY_SAFE])) {
                     $category = [TaxonomyRepository::CATEGORY_SAFE];
                 } else {
                     $category = array_values(
-                        array_intersect($categoryTaxonomy, array_keys($categories[TaxonomyRepository::CATEGORY]))
+                        array_intersect($categoryTaxonomy, array_keys($categories[TaxonomyRepository::CATEGORY] ?? []))
                     );
                 }
                 $quality = array_values(
-                    array_intersect($qualityTaxonomy, array_keys($categories[TaxonomyRepository::QUALITY]))
+                    array_intersect($qualityTaxonomy, array_keys($categories[TaxonomyRepository::QUALITY] ?? []))
                 );
                 $keywords = [
                     TaxonomyRepository::CATEGORY => $category,
@@ -141,7 +141,7 @@ class ClassificationController extends AbstractController
                 ];
 
                 if ($ad->getKeywords() === $keywords) {
-                    break;
+                    continue;
                 }
                 $ad->setKeywords($keywords);
             }
