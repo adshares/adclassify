@@ -4,15 +4,22 @@ namespace Adshares\Adclassify\Repository;
 
 class TaxonomyRepository
 {
+    public const CATEGORY = 'category';
+    public const QUALITY = 'quality';
     public const CATEGORY_SAFE = 'safe';
 
     public function getTaxonomy(): array
     {
         return [
             [
-                'key' => 'category',
+                'key' => self::CATEGORY,
                 'label' => 'Category',
                 'values' => $this->getCatgories(),
+            ],
+            [
+                'key' => self::QUALITY,
+                'label' => 'Quality',
+                'values' => $this->getQualityLevels(),
             ],
         ];
     }
@@ -64,6 +71,27 @@ class TaxonomyRepository
                 'key' => self::CATEGORY_SAFE,
                 'label' => 'Mainstream',
                 'description' => 'Safe content'
+            ],
+        ];
+    }
+
+    public function getQualityLevels(): array
+    {
+        return [
+            [
+                'key' => 'high',
+                'label' => 'Premium',
+                'description' => 'Premium quality campaign'
+            ],
+            [
+                'key' => 'medium',
+                'label' => 'Regular',
+                'description' => 'Regular campaign'
+            ],
+            [
+                'key' => 'low',
+                'label' => 'Low quality',
+                'description' => 'Low quality campaign'
             ],
         ];
     }

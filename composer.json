@@ -92,7 +92,7 @@
 			"phpcs -s src --standard=PHPCompatibility",
 			"phpcs -s src --standard=PSR2"
 		],
-		"dev": "php -t ./public -S adclassify.local:8015"
+		"dev": "/bin/bash -c '(source .env && if [ -f \".env.local\" ]; then source .env.local; fi && php -t ./public -S ${APP_HOST}:${APP_PORT})'"
 	},
 	"conflict": {
 		"symfony/symfony": "*"
