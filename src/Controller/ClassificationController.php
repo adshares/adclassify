@@ -3,7 +3,6 @@
 namespace Adshares\Adclassify\Controller;
 
 use Adshares\Adclassify\Entity\Request as ClassificationRequest;
-use Adshares\Adclassify\Repository\AdRepository;
 use Adshares\Adclassify\Repository\RequestRepository;
 use Adshares\Adclassify\Repository\TaxonomyRepository;
 use RuntimeException;
@@ -66,17 +65,22 @@ class ClassificationController extends AbstractController
             'label' => 'Reject',
             'description' => 'Invalid, below standards'
         ];
+        $qualityLevels = $this->taxonomyRepository->getQualityLevels();
 
-        return $this->render('classification/index.html.twig', [
-            'requests' => $requests,
-            'campaign' => $campaign,
-            'prevCampaign' => $prevCampaign,
-            'nextCampaign' => $nextCampaign,
-            'categories' => $categories,
-            'categorySafe' => $categorySafe,
-            'categoryReject' => $categoryReject,
-            'query' => $query,
-        ]);
+        return $this->render(
+            'classification/index.html.twig',
+            [
+                'requests' => $requests,
+                'campaign' => $campaign,
+                'prevCampaign' => $prevCampaign,
+                'nextCampaign' => $nextCampaign,
+                'categories' => $categories,
+                'categorySafe' => $categorySafe,
+                'categoryReject' => $categoryReject,
+                'qualityLevels' => $qualityLevels,
+                'query' => $query,
+            ]
+        );
     }
 
     /**
@@ -92,9 +96,18 @@ class ClassificationController extends AbstractController
         }
 
         $entityManager = $this->getDoctrine()->getManager();
-        $taxonomy = array_map(function ($category) {
-            return $category['key'];
-        }, $this->taxonomyRepository->getCatgories());
+        $categoryTaxonomy = array_map(
+            function ($category) {
+                return $category['key'];
+            },
+            $this->taxonomyRepository->getCatgories()
+        );
+        $qualityTaxonomy = array_map(
+            function ($category) {
+                return $category['key'];
+            },
+            $this->taxonomyRepository->getQualityLevels()
+        );
 
         $cRequest = null;
         foreach ($classifications as $id => $categories) {
@@ -105,19 +118,28 @@ class ClassificationController extends AbstractController
 
             $ad = $cRequest->getAd();
 
-            if (isset($categories[self::CATEGORY_REJECT])) {
+            if (isset($categories[TaxonomyRepository::CATEGORY][self::CATEGORY_REJECT])) {
                 if ($ad->isRejected()) {
                     break;
                 }
                 $ad->setRejected(true);
             } else {
                 $ad->setRejected(false);
-                if (isset($categories[TaxonomyRepository::CATEGORY_SAFE])) {
+                if (isset($categories[TaxonomyRepository::CATEGORY][TaxonomyRepository::CATEGORY_SAFE])) {
                     $category = [TaxonomyRepository::CATEGORY_SAFE];
                 } else {
-                    $category = array_values(array_intersect($taxonomy, array_keys($categories)));
+                    $category = array_values(
+                        array_intersect($categoryTaxonomy, array_keys($categories[TaxonomyRepository::CATEGORY]))
+                    );
                 }
-                $keywords = ['category' => $category];
+                $quality = array_values(
+                    array_intersect($qualityTaxonomy, array_keys($categories[TaxonomyRepository::QUALITY]))
+                );
+                $keywords = [
+                    TaxonomyRepository::CATEGORY => $category,
+                    TaxonomyRepository::QUALITY => $quality
+                ];
+
                 if ($ad->getKeywords() === $keywords) {
                     break;
                 }
@@ -147,9 +169,14 @@ class ClassificationController extends AbstractController
 
         $next = $this->requestRepository->findNextPending($cRequest);
 
-        return new RedirectResponse($this->generateUrl('classification_index', [
-            'requestId' => $next ? $next->getId() : null
-        ]));
+        return new RedirectResponse(
+            $this->generateUrl(
+                'classification_index',
+                [
+                    'requestId' => $next ? $next->getId() : null
+                ]
+            )
+        );
     }
 
     /**
@@ -166,12 +193,15 @@ class ClassificationController extends AbstractController
 
         $requests = $this->requestRepository->findPaginated($query, $limit, ($page - 1) * $limit, $sort, $order);
 
-        return $this->render('classification/status.html.twig', [
-            'requests' => $requests,
-            'currentPage' => $page,
-            'totalPages' => ceil($requests->count() / $limit),
-            'query' => $query,
-        ]);
+        return $this->render(
+            'classification/status.html.twig',
+            [
+                'requests' => $requests,
+                'currentPage' => $page,
+                'totalPages' => ceil($requests->count() / $limit),
+                'query' => $query,
+            ]
+        );
     }
 
     /**
@@ -195,9 +225,14 @@ class ClassificationController extends AbstractController
             $requestId = null;
         }
 
-        return new RedirectResponse($this->generateUrl($route, [
-            'requestId' => $requestId,
-            'query' => $query,
-        ]));
+        return new RedirectResponse(
+            $this->generateUrl(
+                $route,
+                [
+                    'requestId' => $requestId,
+                    'query' => $query,
+                ]
+            )
+        );
     }
 }

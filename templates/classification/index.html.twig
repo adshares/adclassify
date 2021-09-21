@@ -75,6 +75,20 @@
                         ><i class="fas fa-times mr-2"></i> {{ categoryReject.label }}</button>
                         <input data-key="{{ categoryReject.key }}" type="checkbox" class="collapse"/>
                     </span>
+
+                    {% for category in qualityLevels %}
+                        <span class="button-checkbox quality">
+                            <button
+                                    type="button"
+                                    data-off-color="light"
+                                    data-on-color="warning"
+                                    class="btn btn-sm btn-light"
+                            >{{ category.label }}</button>
+                            <input data-key="{{ category.key }}" type="checkbox" class="collapse"/>
+                        </span>
+                    {% endfor %}
+                    <span class="mr-4"></span>
+
                     {% for category in categories %}
                         <span class="button-checkbox category">
                             <button
@@ -159,10 +173,27 @@
                                                 title="{{ category.description }}"
                                             {% endif %}
                                     >{{ category.label }}</button>
-                                    <input name="classifications[{{ request.id }}][{{ category.key }}]" type="checkbox"
+                                    <input name="classifications[{{ request.id }}][category][{{ category.key }}]" type="checkbox"
                                            {% if isChecked %}checked{% endif %} class="collapse"/>
                                 </span>
                             {% endfor %}
+                            <div class="mt-2 quality-levels">
+                                {% for category in qualityLevels %}
+                                    {% set isChecked = category.key in request.ad.keywords.quality|default([]) %}
+                                    <span class="button-checkbox quality quality-{{ category.key }}">
+                                    <button type="button"
+                                            class="btn btn-outline-secondary mb-1"
+                                            data-on-color="warning"
+                                            data-off-color="outline-secondary"
+                                            {% if category.description is defined %}
+                                                title="{{ category.description }}"
+                                            {% endif %}
+                                    >{{ category.label }}</button>
+                                    <input name="classifications[{{ request.id }}][quality][{{ category.key }}]" type="checkbox"
+                                           {% if isChecked %}checked{% endif %} class="collapse"/>
+                                </span>
+                                {% endfor %}
+                            </div>
                             <div class="row small mt-2 py-1 border rounded">
                                 <div class="col-sm-2 px-1 text-right">id:</div>
                                 <div class="col-sm-10 px-1"><code>{{ request.bannerId|hex }}</code></div>
