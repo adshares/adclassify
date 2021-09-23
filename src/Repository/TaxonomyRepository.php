@@ -63,11 +63,6 @@ class TaxonomyRepository
                 'description' => 'Software download, extensions'
             ],
             [
-                'key' => 'quality',
-                'label' => 'Quality Ads',
-                'description' => 'Safe and good quality ads'
-            ],
-            [
                 'key' => self::CATEGORY_SAFE,
                 'label' => 'Mainstream',
                 'description' => 'Safe content'
