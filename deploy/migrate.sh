@@ -3,4 +3,4 @@
 # Usage: migrate.sh [<work-dir>]
 cd ${1:-"."}
 
-./bin/console doctrine:schema:update --no-interaction --force
+bin/console doctrine:schema:update --no-interaction --force
