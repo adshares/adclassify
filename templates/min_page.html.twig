@@ -10,12 +10,12 @@
     <section class="text-center">
         <header>
             <img src="{{ asset('build/images/adshares-logo-min.svg') }}" height="72" class="mb-4" alt="Adshares">
-            <h1 class="h3 mb-3 font-weight-normal">Adclassify</h1>
+            <h1 class="h3 mb-3 font-weight-normal">{{ app.name }}</h1>
         </header>
         {% block content %}{% endblock %}
         <footer>
             <div class="mt-2 mb-2 py-1 border-top text-muted small">
-                Adshares | Adclassify | v0.0.1
+                Adshares | {{ app.name }} | {{ app.version }}
             </div>
         </footer>
     </section>
