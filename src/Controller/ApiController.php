@@ -111,7 +111,7 @@ class ApiController extends AbstractController
             throw new UnprocessableEntityHttpException(sprintf('Invalid banner checksum (in %s)', $banner['id']));
         }
 
-        if (empty($banner['type']) || !in_array($banner['type'], ['image', 'html', 'direct'])) {
+        if (empty($banner['type']) || !in_array($banner['type'], ['image', 'html', 'direct', 'video'])) {
             throw new UnprocessableEntityHttpException(sprintf('Invalid banner type (in %s)', $banner['id']));
         }
 

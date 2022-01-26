@@ -17,6 +17,7 @@
 		"php": "^7.4",
 		"ext-ctype": "*",
 		"ext-curl": "*",
+		"ext-fileinfo": "*",
 		"ext-iconv": "*",
 		"ext-json": "*",
 		"ext-sodium": "*",
