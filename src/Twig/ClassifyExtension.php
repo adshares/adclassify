@@ -4,7 +4,6 @@ namespace Adshares\Adclassify\Twig;
 
 use Adshares\Adclassify\Entity\Ad;
 use Adshares\Adclassify\Entity\Request;
-use finfo;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
@@ -101,13 +100,14 @@ class ClassifyExtension extends AbstractExtension
 
     public function formatVideo64($raw, $inline = true): string
     {
+        $mimeType = '';
         if ($raw instanceof Request) {
-            $raw = $raw->getAd()->getContent();
-        } elseif ($raw instanceof Ad) {
+            $raw = $raw->getAd();
+        }
+        if ($raw instanceof Ad) {
+            $mimeType = $raw->getMime();
             $raw = $raw->getContent();
         }
-
-        $mimeType = (new finfo(FILEINFO_MIME_TYPE))->buffer($raw);
 
         return $inline ? sprintf('data:%s;base64,%s', $mimeType, base64_encode($raw)) : base64_encode($raw);
     }
