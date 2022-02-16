@@ -47,7 +47,7 @@ class AdclassifyProcessCallbackCommand extends Command
             ->addOption('chunk', 'c', InputOption::VALUE_REQUIRED, 'Size of processed chunk', 500);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
@@ -91,11 +91,13 @@ class AdclassifyProcessCallbackCommand extends Command
             if ($request->getStatus() === ClassificationRequest::STATUS_PROCESSED) {
                 $ad = $request->getAd();
                 if (!$ad->isProcessed()) {
-                    throw new RuntimeException(sprintf(
-                        'Classification %s [#%d] is not processed',
-                        bin2hex($ad->getChecksum()),
-                        $ad->getId()
-                    ));
+                    throw new RuntimeException(
+                        sprintf(
+                            'Classification %s [#%d] is not processed',
+                            bin2hex($ad->getChecksum()),
+                            $ad->getId()
+                        )
+                    );
                 }
                 $data['keywords'] = $ad->getKeywords();
                 $data['signature'] = $this->signer->signClassification($ad, $timestamp);
@@ -127,7 +129,9 @@ class AdclassifyProcessCallbackCommand extends Command
                     $success = true;
                     $sent += count($data);
                 } else {
-                    $io->warning(sprintf('Received %d status code', $response->getStatusCode()));
+                    $io->warning(
+                        sprintf('Received %d status code: %s', $response->getStatusCode(), $response->getContent(false))
+                    );
                 }
             } catch (TransportExceptionInterface $exception) {
                 $success = false;
