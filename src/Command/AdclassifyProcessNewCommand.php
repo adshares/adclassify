@@ -47,7 +47,7 @@ class AdclassifyProcessNewCommand extends Command
             ->addOption('retry', 'r', InputOption::VALUE_NONE, 'Retry process failed requests');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
