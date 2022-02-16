@@ -111,12 +111,16 @@ class ApiController extends AbstractController
             throw new UnprocessableEntityHttpException(sprintf('Invalid banner checksum (in %s)', $banner['id']));
         }
 
-        if (empty($banner['type']) || !in_array($banner['type'], ['image', 'html', 'direct'])) {
+        if (empty($banner['type']) || !in_array($banner['type'], ['image', 'html', 'direct', 'video'])) {
             throw new UnprocessableEntityHttpException(sprintf('Invalid banner type (in %s)', $banner['id']));
         }
 
         if (empty($banner['size'])) {
             throw new UnprocessableEntityHttpException(sprintf('Invalid banner size (in %s)', $banner['id']));
+        }
+
+        if (empty($banner['mime'])) {
+            throw new UnprocessableEntityHttpException(sprintf('Invalid banner mime (in %s)', $banner['id']));
         }
 
         if (empty($banner['campaign_id']) || !preg_match('/^[0-9A-F]{32}$/i', $banner['campaign_id'])) {
@@ -143,6 +147,7 @@ class ApiController extends AbstractController
             $classification = new Ad();
             $classification->setSize($banner['size']);
             $classification->setChecksum(hex2bin($banner['checksum']));
+            $classification->setMime($banner['mime']);
             $entityManager->persist($classification);
         }
 

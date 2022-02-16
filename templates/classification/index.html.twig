@@ -119,6 +119,11 @@
                                             ">
                                         {% if request.type == 'image' %}
                                             <img src="{{ request|image64(true) }}" border="0" alt=""/>
+                                        {% elseif request.type == 'video' %}
+                                            <video controls width="100%">
+                                                <source src="{{ request|video64(true) }}">
+                                                Sorry, your browser doesn't support embedded videos.
+                                            </video>
                                         {% else %}
                                             <iframe srcdoc="{{ request.ad.content }}" sandbox="allow-scripts" width="100%"
                                                     height="100%"

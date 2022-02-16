@@ -2,6 +2,7 @@
 
 namespace Adshares\Adclassify\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -34,7 +35,7 @@ class Ad
     private $id;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      * @Gedmo\Timestampable(on="create")
      * @ORM\Column(type="datetime")
      */
@@ -71,6 +72,13 @@ class Ad
     private $size;
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(type="string", length=127, nullable=true)
+     */
+    private $mime;
+
+    /**
      * @var bool
      *
      * @ORM\Column(type="boolean", options={"default": false})
@@ -79,7 +87,7 @@ class Ad
     private $processed = false;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      * @Gedmo\Timestampable(on="change", field="processed", value=true)
      * @ORM\Column(type="datetime", nullable=true)
      */
@@ -112,12 +120,12 @@ class Ad
         return $this->id;
     }
 
-    public function setCreatedAt(\DateTime $createdAt): void
+    public function setCreatedAt(DateTime $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
-    public function getCreatedAt(): \DateTime
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
@@ -168,6 +176,16 @@ class Ad
     public function setSize(string $size): void
     {
         $this->size = $size;
+    }
+
+    public function getMime(): ?string
+    {
+        return $this->mime;
+    }
+
+    public function setMime(string $mime): void
+    {
+        $this->mime = $mime;
     }
 
     public function getWidth(): int
