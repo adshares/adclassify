@@ -47,7 +47,7 @@ class AdclassifyProcessCallbackCommand extends Command
             ->addOption('chunk', 'c', InputOption::VALUE_REQUIRED, 'Size of processed chunk', 500);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
