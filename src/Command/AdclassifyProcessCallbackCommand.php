@@ -127,7 +127,7 @@ class AdclassifyProcessCallbackCommand extends Command
                     $success = true;
                     $sent += count($data);
                 } else {
-                    $io->warning(sprintf('Received %d status code', $response->getStatusCode()));
+                    $io->warning(sprintf('Received %d status code: %s', $response->getStatusCode(), $response->getContent(false)));
                 }
             } catch (TransportExceptionInterface $exception) {
                 $success = false;
