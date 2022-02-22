@@ -1,11 +1,10 @@
 import $ from 'jquery'
 import * as THREE from 'three'
-import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js'
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js'
-import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js'
-import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js'
-import {VOXLoader, VOXMesh} from 'three/examples/jsm/loaders/VOXLoader.js'
-import {MeshoptDecoder} from 'three/examples/jsm/libs/meshopt_decoder.module.js'
+import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment'
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader'
+import {VOXLoader, VOXMesh} from 'three/examples/jsm/loaders/VOXLoader'
+import {MeshoptDecoder} from 'three/examples/jsm/libs/meshopt_decoder.module'
 
 function extractModelUrl(element) {
     return element.removeAttributeNode(element.getAttributeNode('data-src')).value
@@ -28,9 +27,18 @@ function initCamera() {
     return camera
 }
 
+function initRenderer(element) {
+    const renderer = new THREE.WebGLRenderer({antialias: true})
+    renderer.setPixelRatio(window.devicePixelRatio)
+    renderer.setSize(element.offsetWidth, element.offsetHeight)
+    return renderer;
+}
+
 function initScene() {
     const scene = new THREE.Scene()
     scene.background = new THREE.Color(0xbbbbbb)
+    scene.add(axes(1.0))
+    scene.add(frame(2.0))
     return scene
 }
 
@@ -61,20 +69,23 @@ function frame(length) {
     return new THREE.Line(geometry, material)
 }
 
+function handleLoadError(element, error) {
+    console.error(error)
+    const message = error.message ? `Error during model load: ${error.message}` : 'Model load failed'
+    const spanElement = document.createElement('span')
+    spanElement.innerHTML = message
+    element.appendChild(spanElement)
+}
+
 function displayGltfModel(element) {
     let mixer
-    const containerWidth = element.offsetWidth
-    const containerHeight = element.offsetHeight
     const modelUrl = extractModelUrl(element)
 
     const clock = new THREE.Clock()
-    const renderer = new THREE.WebGLRenderer({antialias: true})
-    renderer.setPixelRatio(window.devicePixelRatio)
-    renderer.setSize(containerWidth, containerHeight)
+    const renderer = initRenderer(element);
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1
     renderer.outputEncoding = THREE.sRGBEncoding
-    element.appendChild(renderer.domElement)
 
     const camera = initCamera()
     const scene = initScene()
@@ -83,26 +94,24 @@ function displayGltfModel(element) {
     scene.environment = pmremGenerator.fromScene(environment).texture
     const controls = initControls(camera, renderer)
 
-    const dracoLoader = new DRACOLoader()
-        .setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.1/')
     const loader = new GLTFLoader()
-    loader.setDRACOLoader(dracoLoader)
     loader.setMeshoptDecoder(MeshoptDecoder)
-    loader.load(modelUrl, function (gltf) {
+    loader.load(modelUrl, gltf => {
         const model = gltf.scene
-        const box = new THREE.Box3().setFromObject(model)
-        model.scale.setScalar(scaleUniformlyTo2x2x2(box))
+        const boundingBox = new THREE.Box3().setFromObject(model)
+        model.scale.setScalar(scaleUniformlyTo2x2x2(boundingBox))
         scene.add(model)
 
         if (gltf.animations.length > 0) {
             mixer = new THREE.AnimationMixer(model)
             mixer.clipAction(gltf.animations[0]).play()
         }
+        element.appendChild(renderer.domElement)
+        animate()
+    }, () => {
+    }, error => {
+        handleLoadError(element, error);
     })
-
-    //TODO test
-    scene.add(axes(1.0))
-    scene.add(frame(2.0))
 
     function animate() {
         requestAnimationFrame(animate)
@@ -113,20 +122,11 @@ function displayGltfModel(element) {
         controls.update()
         renderer.render(scene, camera)
     }
-
-    animate()
 }
 
 function displayVoxModel(element) {
-    const containerWidth = element.offsetWidth
-    const containerHeight = element.offsetHeight
     const modelUrl = extractModelUrl(element)
-
-    const renderer = new THREE.WebGLRenderer()
-    renderer.setPixelRatio(window.devicePixelRatio)
-    renderer.setSize(containerWidth, containerHeight)
-    element.appendChild(renderer.domElement)
-
+    const renderer = initRenderer(element)
     const camera = initCamera()
     const scene = initScene()
     const controls = initControls(camera, renderer)
@@ -143,23 +143,25 @@ function displayVoxModel(element) {
     const loader = new VOXLoader()
     loader.load(modelUrl, chunks => {
         const group = new THREE.Group()
-        const box = new THREE.Box3()
+        const boundingBox = new THREE.Box3()
         const palette = chunks[chunks.length - 1].palette
         chunks.forEach(chunk => {
             chunk.palette = palette
             const mesh = new VOXMesh(chunk)
-            box.expandByObject(mesh)
+            boundingBox.expandByObject(mesh)
             mesh.visible = false
             group.add(mesh)
         })
         group.name = 'model'
-        group.scale.setScalar(scaleUniformlyTo2x2x2(box))
+        group.scale.setScalar(scaleUniformlyTo2x2x2(boundingBox))
         scene.add(group)
-    })
 
-    //TODO test
-    scene.add(axes(1.0))
-    scene.add(frame(2.0))
+        element.appendChild(renderer.domElement)
+        requestAnimationFrame(animate)
+    }, () => {
+    }, error => {
+        handleLoadError(element, error);
+    })
 
     function animate(time) {
         requestAnimationFrame(animate)
@@ -176,8 +178,6 @@ function displayVoxModel(element) {
         controls.update()
         renderer.render(scene, camera)
     }
-
-    requestAnimationFrame(animate)
 }
 
 $(document).ready(function () {
