@@ -10,6 +10,7 @@ import '@fortawesome/fontawesome-free/css/regular.css'
 import '@fortawesome/fontawesome-free/css/solid.css'
 import './button-checkbox'
 import './panel'
+import './model-preview'
 
 $(document).ready(function () {
   $('[data-toggle="popover"]').popover()

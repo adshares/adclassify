@@ -10,6 +10,7 @@
         "node-sass": "^7.0",
         "popper.js": "^1.15",
         "sass-loader": "^12.0",
+        "three": "^0.137.5",
         "webpack": "^5.0",
         "webpack-notifier": "^1.8"
     },
