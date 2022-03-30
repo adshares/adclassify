@@ -6,6 +6,8 @@ import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader'
 import {VOXLoader, VOXMesh} from 'three/examples/jsm/loaders/VOXLoader'
 import {MeshoptDecoder} from 'three/examples/jsm/libs/meshopt_decoder.module'
 
+const MEGAVOX_SIZE_LIMIT = 126
+
 function extractModelUrl(element) {
     return element.removeAttributeNode(element.getAttributeNode('data-src')).value
 }
@@ -22,7 +24,7 @@ function scaleUniformlyTo2x2x2(box) {
 }
 
 function initCamera() {
-    const camera = new THREE.PerspectiveCamera(50, 1, 0.01, 10)
+    const camera = new THREE.PerspectiveCamera(50, 1, 0.01, 1000)
     camera.position.set(1.75, 0.75, 1.75)
     return camera
 }
@@ -37,8 +39,6 @@ function initRenderer(element) {
 function initScene() {
     const scene = new THREE.Scene()
     scene.background = new THREE.Color(0xbbbbbb)
-    scene.add(axes(1.0))
-    scene.add(frame(2.0))
     return scene
 }
 
@@ -89,6 +89,8 @@ function displayGltfModel(element) {
 
     const camera = initCamera()
     const scene = initScene()
+    scene.add(axes(1.0))
+    scene.add(frame(2.0))
     const environment = new RoomEnvironment()
     const pmremGenerator = new THREE.PMREMGenerator(renderer)
     scene.environment = pmremGenerator.fromScene(environment).texture
@@ -129,6 +131,8 @@ function displayVoxModel(element) {
     const renderer = initRenderer(element)
     const camera = initCamera()
     const scene = initScene()
+    scene.add(axes(MEGAVOX_SIZE_LIMIT / 2))
+    scene.add(frame(MEGAVOX_SIZE_LIMIT))
     const controls = initControls(camera, renderer)
 
     const hemisphereLight = new THREE.HemisphereLight(0x888888, 0x444444, 1)
@@ -142,6 +146,10 @@ function displayVoxModel(element) {
 
     const loader = new VOXLoader()
     loader.load(modelUrl, chunks => {
+        if (chunks === undefined) {
+            handleLoadError(element, new Error('Not a valid VOX file'))
+            return
+        }
         const group = new THREE.Group()
         const boundingBox = new THREE.Box3()
         const palette = chunks[chunks.length - 1].palette
@@ -152,9 +160,24 @@ function displayVoxModel(element) {
             mesh.visible = false
             group.add(mesh)
         })
+
+        if (
+            boundingBox.max.x - boundingBox.min.x > MEGAVOX_SIZE_LIMIT ||
+            boundingBox.max.y - boundingBox.min.y > MEGAVOX_SIZE_LIMIT ||
+            boundingBox.max.z - boundingBox.min.z > MEGAVOX_SIZE_LIMIT
+        ) {
+            handleLoadError(
+                element,
+                new Error(`Model size exceeds the Megavox limit ${MEGAVOX_SIZE_LIMIT}x${MEGAVOX_SIZE_LIMIT}x${MEGAVOX_SIZE_LIMIT}`)
+            )
+            return
+        }
+
         group.name = 'model'
-        group.scale.setScalar(scaleUniformlyTo2x2x2(boundingBox))
         scene.add(group)
+        const scale = scaleUniformlyTo2x2x2(boundingBox)
+        scene.scale.setScalar(scale)
+        controls.maxDistance = 4.5 * (MEGAVOX_SIZE_LIMIT / 2) * scale
 
         element.appendChild(renderer.domElement)
         requestAnimationFrame(animate)
