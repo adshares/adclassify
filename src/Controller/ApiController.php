@@ -202,8 +202,8 @@ class ApiController extends AbstractController
         /** @var ApiKey $apiKey */
         $apiKey = $user->getApiKeys()->first();
         $data = [
-            'api_key_name' => $apiKey->getName(),
-            'api_key_secret' => $apiKey->getSecret(),
+            'apiKeyName' => $apiKey->getName(),
+            'apiKeySecret' => $apiKey->getSecret(),
         ];
 
         return new JsonResponse($data, Response::HTTP_OK);
