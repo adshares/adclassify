@@ -3,10 +3,12 @@
 namespace Adshares\Adclassify\Controller;
 
 use Adshares\Adclassify\Entity\Ad;
+use Adshares\Adclassify\Entity\ApiKey;
 use Adshares\Adclassify\Entity\Request as ClassificationRequest;
 use Adshares\Adclassify\Repository\AdRepository;
 use Adshares\Adclassify\Repository\RequestRepository;
 use Adshares\Adclassify\Repository\TaxonomyRepository;
+use Adshares\Adclassify\Repository\UserRepository;
 use Adshares\Adclassify\Service\Signer;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -17,6 +19,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Collection;
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @Route("/api/v{version}", requirements={"version"="0|1"}, name="api_")
@@ -172,5 +178,65 @@ class ApiController extends AbstractController
             $entityManager->persist($duplicate);
         }
         $entityManager->flush();
+    }
+
+    /**
+     * @Route("/user", name="create_user")
+     */
+    public function createUser(
+        Request $request,
+        UserRepository $userRepository,
+        ValidatorInterface $validator
+    ): Response {
+        $input = json_decode($request->getContent(), true);
+
+        $this->validateUserCreateRequestContent($input, $userRepository, $validator);
+
+        $email = $input['email'];
+        $name = $input['name'];
+        $password = str_replace(['+', '/', '='], ['x', 'y', ''], base64_encode(random_bytes(8)));
+
+        $user = $userRepository->createUser($email, $name, $password, ['ROLE_CLIENT']);
+        $this->logger->info(sprintf('User %s was created.', $email));
+
+        /** @var ApiKey $apiKey */
+        $apiKey = $user->getApiKeys()->first();
+        $data = [
+            'api_key_name' => $apiKey->getName(),
+            'api_key_secret' => $apiKey->getSecret(),
+        ];
+
+        return new JsonResponse($data, Response::HTTP_OK);
+    }
+
+    private function validateUserCreateRequestContent(
+        array $input,
+        UserRepository $userRepository,
+        ValidatorInterface $validator
+    ): void {
+        $constraints = new Collection([
+            'email' => [
+                new NotBlank(),
+                new Email(),
+            ],
+            'name' => [
+                new NotBlank(),
+            ],
+        ]);
+
+        $violations = $validator->validate($input, $constraints);
+        if (0 !== count($violations)) {
+            throw new UnprocessableEntityHttpException(
+                sprintf(
+                    'The field %s is invalid. %s',
+                    $violations->get(0)->getPropertyPath(),
+                    $violations->get(0)->getMessage()
+                )
+            );
+        }
+
+        if (null !== $userRepository->findOneBy(['email' => $input['email']])) {
+            throw new UnprocessableEntityHttpException(sprintf('Email %s is already in use.', $input['email']));
+        }
     }
 }
