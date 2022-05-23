@@ -16,7 +16,7 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         user:
-            pattern: ^/api/v\d+/user$
+            pattern: ^/api/v\d+/users$
             security: false
         api:
             pattern: ^/api/

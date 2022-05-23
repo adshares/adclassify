@@ -181,7 +181,7 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/user", name="create_user")
+     * @Route("/users", methods={"POST"}, name="create_user")
      */
     public function createUser(
         Request $request,
