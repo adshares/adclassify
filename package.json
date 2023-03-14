@@ -11,7 +11,7 @@
         "popper.js": "^1.15",
         "sass-loader": "^12.0",
         "three": "^0.137.5",
-        "webpack": "^5.0",
+        "webpack": "^5.76",
         "webpack-notifier": "^1.8"
     },
     "license": "proprietary",
