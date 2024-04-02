@@ -58,9 +58,9 @@
         "version": "3.1",
         "recipe": {
             "repo": "github.com/symfony/recipes",
-            "branch": "master",
+            "branch": "main",
             "version": "3.1",
-            "ref": "ee609429c9ee23e22d6fa5728211768f51ed2818"
+            "ref": "1d01ec03c6ecbd67c3375c5478c9a423ae5d6a33"
         },
         "files": [
             "config/packages/doctrine_migrations.yaml",
@@ -218,19 +218,16 @@
         "version": "v1.1.5"
     },
     "symfony/debug-bundle": {
-        "version": "4.1",
+        "version": "5.3",
         "recipe": {
             "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "4.1",
-            "ref": "0ce7a032d344fb7b661cd25d31914cd703ad445b"
+            "branch": "main",
+            "version": "5.3",
+            "ref": "5aa8aa48234c8eb6dbdd7b3cd5d791485d2cec4b"
         },
         "files": [
-            "config/packages/dev/debug.yaml"
+            "config/packages/debug.yaml"
         ]
-    },
-    "symfony/debug-pack": {
-        "version": "v1.0.7"
     },
     "symfony/dependency-injection": {
         "version": "v4.2.10"
@@ -263,12 +260,12 @@
         "version": "v4.2.10"
     },
     "symfony/flex": {
-        "version": "1.0",
+        "version": "1.21",
         "recipe": {
             "repo": "github.com/symfony/recipes",
-            "branch": "master",
+            "branch": "main",
             "version": "1.0",
-            "ref": "c0eeb50665f0f77226616b6038a9b06c03752d8e"
+            "ref": "146251ae39e06a95be0fe3d13c807bcf3938b172"
         },
         "files": [
             ".env"
@@ -338,9 +335,6 @@
     "symfony/options-resolver": {
         "version": "v4.2.10"
     },
-    "symfony/orm-pack": {
-        "version": "v1.0.6"
-    },
     "symfony/password-hasher": {
         "version": "v5.3.2"
     },
@@ -373,9 +367,6 @@
     },
     "symfony/process": {
         "version": "v4.2.10"
-    },
-    "symfony/profiler-pack": {
-        "version": "v1.0.4"
     },
     "symfony/property-access": {
         "version": "v4.2.10"
@@ -429,9 +420,6 @@
     "symfony/serializer": {
         "version": "v4.2.10"
     },
-    "symfony/serializer-pack": {
-        "version": "v1.0.2"
-    },
     "symfony/service-contracts": {
         "version": "v1.1.8"
     },
@@ -465,9 +453,9 @@
         "version": "5.3",
         "recipe": {
             "repo": "github.com/symfony/recipes",
-            "branch": "master",
+            "branch": "main",
             "version": "5.3",
-            "ref": "b416645602504d22d15912e0918001e6d71bb9fa"
+            "ref": "ce42aa769cc2edfd9246e5647a3a967afe6387ca"
         },
         "files": [
             "config/packages/twig.yaml",
