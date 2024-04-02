@@ -10,7 +10,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AppController extends AbstractController
 {
-
     /**
      * @Route("/", methods={"GET"}, name="index")
      */

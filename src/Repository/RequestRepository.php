@@ -92,13 +92,19 @@ class RequestRepository extends ServiceEntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
-    public function findPendingDuplicates(User $user, string $bannerId): array
+    public function findDuplicates(User $user, string $bannerId): array
     {
         return $this->findBy(
             [
                 'user' => $user,
                 'bannerId' => $bannerId,
-                'status' => [Request::STATUS_NEW, Request::STATUS_PENDING],
+                'status' => [
+                    Request::STATUS_PROCESSED,
+                    Request::STATUS_NEW,
+                    Request::STATUS_PENDING,
+                    Request::STATUS_FAILED,
+                    Request::STATUS_REJECTED,
+                ],
             ]
         );
     }

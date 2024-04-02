@@ -13,7 +13,6 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 class WsseListener
 {
-
     protected TokenStorageInterface $tokenStorage;
     protected AuthenticationManagerInterface $authenticationManager;
     protected ?LoggerInterface $logger;

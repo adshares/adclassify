@@ -43,8 +43,13 @@ class TaxonomyRepository
                 'description' => 'Cryptocurrencies, exchanges, wallets'
             ],
             [
+                'key' => 'dating',
+                'label' => 'Dating',
+                'description' => 'Dating, relationships'
+            ],
+            [
                 'key' => 'drugs',
-                'label' => 'Supplements',
+                'label' => 'Nutrition',
                 'description' => 'Medicines, dietary supplement'
             ],
             [
