@@ -146,7 +146,7 @@ class ApiController extends AbstractController
     {
         $entityManager = $this->getDoctrine()->getManager();
 
-        $duplicates = $this->requestRepository->findPendingDuplicates($this->getUser(), hex2bin($banner['id']));
+        $duplicates = $this->requestRepository->findDuplicates($this->getUser(), hex2bin($banner['id']));
 
         $classification = $this->classificationRepository->findByChecksum(hex2bin($banner['checksum']));
         if ($classification === null) {

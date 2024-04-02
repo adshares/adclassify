@@ -33,7 +33,6 @@ class ClassifyExtension extends AbstractExtension
 
     public static function formatRequestStatus(Request $request, bool $extraData = false, bool $short = false): string
     {
-
         $labels = [
             Request::STATUS_PROCESSED => ['Processed', '✓'],
             Request::STATUS_NEW => ['New', '⋯'],
